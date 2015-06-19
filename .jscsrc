@@ -1,0 +1,102 @@
+{
+    // setup
+    "fileExtensions":  [ ".js" ],
+    "excludeFiles":    [ "./node_modules/**" ],
+
+    // general rules
+    "safeContextKeyword": [ "self" ],
+    "validateParameterSeparator": ", ",
+    "validateQuoteMarks": {
+        "escape": true,
+        "mark": "'"
+    },
+    "requireLineFeedAtFileEnd": true,
+
+    // alignment rules
+    "maximumLineLength": {
+        "value": 80,
+        "allowComments": true,
+        "allowUrlComments": true,
+        "allowRegex": true
+    },
+    "validateIndentation": 4,
+
+    // disallow rules
+    "disallowImplicitTypeConversion": [
+        "numeric",
+        "boolean",
+        "binary",
+        "string"
+    ],
+    "disallowMixedSpacesAndTabs": true,
+    "disallowMultipleVarDecl": "exceptUndefined",
+    "disallowNewlineBeforeBlockStatements": true,
+    "disallowOperatorBeforeLineBreak": [ "." ],
+    "disallowQuotedKeysInObjects": true,
+    "disallowSpaceAfterPrefixUnaryOperators": true,
+    "disallowSpaceBeforePostfixUnaryOperators": true,
+    "disallowSpacesInFunction": {
+        "beforeOpeningRoundBrace": true
+    },
+    "disallowSpacesInCallExpression": true,
+    "disallowTrailingComma": true,
+    "disallowTrailingWhitespace": true,
+    "disallowYodaConditions": true,
+
+    // require rules
+    "requireBlocksOnNewline": true,
+    "requireCamelCaseOrUpperCaseIdentifiers": "ignoreProperties",
+    "requireCapitalizedConstructors": true,
+    "requireCurlyBraces": [
+        "if",
+        "else",
+        "for",
+        "while",
+        "do",
+        "try",
+        "catch"
+    ],
+    "requireDotNotation": true,
+    "requireLineBreakAfterVariableAssignment": true,
+    "requirePaddingNewLinesAfterUseStrict": true,
+    "requirePaddingNewLinesBeforeExport": true,
+    "requirePaddingNewlinesBeforeKeywords": [
+        "do",
+        "for",
+        "if",
+        "switch",
+        "try",
+        "while"
+    ],
+    "requireSemicolons": true,
+    "requireSpaceAfterBinaryOperators": true,
+    "requireSpaceAfterKeywords": [
+        "do",
+        "for",
+        "if",
+        "else",
+        "switch",
+        "case",
+        "try",
+        "catch",
+        "while",
+        "return",
+        "typeof",
+        "delete",
+        "new",
+        "void"
+    ],
+    "requireSpaceBeforeBinaryOperators": true,
+    "requireSpaceBeforeBlockStatements": true,
+    "requireSpaceBeforeKeywords": [
+        "else",
+        "while",
+        "catch"
+    ],
+    "requireSpaceBetweenArguments": true,
+    "requireSpacesInConditionalExpression": true,
+    "requireSpacesInForStatement": true,
+    "requireSpacesInFunction": {
+        "beforeOpeningCurlyBrace": true
+    }
+}

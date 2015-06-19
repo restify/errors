@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# commit hook for JShint
+npm run prepush
+prepushProcess=$?
+
+# now output the stuff
+exit $prepushProcess
