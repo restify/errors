@@ -5,18 +5,6 @@ var assert = require('assert-plus');
 
 
 //------------------------------------------------------------------------------
-// local global vars
-//------------------------------------------------------------------------------
-
-/**
- * global flag for whether or not we're building in CI environment.
- * used to trigger junit/xunit reporters.
- * @type {Boolean}
- */
-var CI = false;
-
-
-//------------------------------------------------------------------------------
 // general helper functions
 //------------------------------------------------------------------------------
 
@@ -87,42 +75,8 @@ function spawnBinary(options, cb) {
  * @returns {void}
  */
 function pipeIO(childProc, binName, fileName) {
-
-    var fs = require('fs');
-    var path = require('path');
-    var mkdirp = require('mkdirp');
-
-    // in CI, we may want to hook up IO to write to a file, i.e., junit
-    if (isCI() === true) {
-        // assert options, blow up if necessary
-        assert.string(fileName);
-        assert.notEqual(fileName, '');
-
-        // make the ci dir if it doesn't already exist
-        mkdirp('./ci', function mkdirpComplete(err) {
-            if (err) {
-                throw err;
-            }
-            var finalName = path.join('./', '/ci', fileName);
-            var writeStream = fs.createWriteStream(finalName);
-            childProc.stdout.pipe(writeStream);
-            childProc.stderr.pipe(writeStream);
-        });
-    } else {
-        // in non CI, just hook child process io with current process io,
-        // usually the terminal
-        childProc.stdout.pipe(process.stdout);
-        childProc.stderr.pipe(process.stderr);
-    }
-}
-
-
-/**
- * return CI flag
- * @returns {Boolean}
- */
-function isCI() {
-    return CI;
+    childProc.stdout.pipe(process.stdout);
+    childProc.stderr.pipe(process.stderr);
 }
 
 
@@ -171,11 +125,6 @@ function runSerial(tasks, cb) {
             gutil.log(color('• ' + '\'' + failedTask + '\''));
             gutil.log();
             gutil.log(color('Errors may exist in other tasks, please fix before proceeding!'));
-
-            // in CI, we output all unit test results to xml files.
-            if (CI === true) {
-                gutil.log(color('Check \'/ci/*.xml\' for more information.'));
-            }
         }
 
         // finish output message
@@ -192,5 +141,4 @@ function runSerial(tasks, cb) {
 }
 
 module.exports.spawnBinary = spawnBinary;
-module.exports.isCI = isCI;
 module.exports.runSerial = runSerial;

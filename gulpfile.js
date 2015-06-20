@@ -19,6 +19,7 @@ gulp.task('codestyleFix',   require('./build/codestyle').readAndFix);
 gulp.task('test',           require('./build/test').run);
 gulp.task('watchTests',     require('./build/test').watchAndRun);
 gulp.task('githooks',       require('./build/githooks'));
+gulp.task('report',         require('./build/report'));
 
 //------------------------------------------------------------------------------
 // register top level tasks exposed to npm.

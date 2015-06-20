@@ -13,8 +13,8 @@ var WError        = require('verror').WError;
 
 // internal
 var helpers       = require('../lib/helpers');
-var HttpError     = require('../lib/HttpError');
-var RestError     = require('../lib/RestError');
+var HttpError     = require('../lib/baseClasses/HttpError');
+var RestError     = require('../lib/baseClasses/RestError');
 var httpErrors    = require('../lib/httpErrors');
 var restErrors    = require('../lib/restErrors');
 var restifyErrors = require('../lib/index.js');
@@ -377,18 +377,22 @@ describe('restify-errors node module.', function() {
             assert.isAbove(_.size(restifyErrors), 30);
         });
 
-        it('should create error from status code', function() {
-            var err = restifyErrors.errFromCode(409, 'foobar');
+        it('should create custom RestError subclass', function() {
+            var underlyingErr = new Error('underlying error!');
+            var ExecutionError = restifyErrors.makeError('ExecutionError', 406);
+            var err = new ExecutionError(underlyingErr, 'bad joystick input');
 
-            assert.equal(err instanceof restifyErrors.ConflictError, true);
+            assert.equal(err instanceof ExecutionError, true);
+            assert.equal(err instanceof RestError, true);
             assert.equal(err instanceof HttpError, true);
             assert.equal(err instanceof WError, true);
             assert.equal(err instanceof Error, true);
-            assert.equal(err.message, 'foobar');
-            assert.equal(err.statusCode, 409);
+            assert.equal(err.message, 'bad joystick input');
+            assert.equal(err.statusCode, 406);
             assert.isObject(err.body);
-            assert.equal(err.body.code, 'ConflictError');
-            assert.equal(err.body.message, 'foobar');
+            assert.equal(err.body.code, 'Error');
+            assert.equal(err.body.message, 'bad joystick input');
+            assert.equal(err.we_cause, underlyingErr);
         });
     });
 });

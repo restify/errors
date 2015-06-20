@@ -1,6 +1,7 @@
 'use strict';
 
 var helpers = require('./helpers');
+var globs   = require('./globs');
 
 //------------------------------------------------------------------------------
 // lint task
@@ -13,13 +14,9 @@ var helpers = require('./helpers');
  */
 function lint(cb) {
 
-    var binArgs = (helpers.isCI() === true) ?
-                    ['.', '-f', 'junit'] :
-                    ['.', '--color'];
-
     helpers.spawnBinary({
         name: 'eslint',
-        args: binArgs,
+        args: [globs.lib, globs.test, '--color'],
         fileOutput: 'lint.xml',
         errorMessage: 'Lint errors found.'
     }, cb);

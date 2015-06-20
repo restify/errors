@@ -1,5 +1,12 @@
 # restify-errors
 
+<!-- [![NPM Version](https://img.shields.io/npm/v/errors.svg)](https://npmjs.org/package/errors) -->
+[![Build Status](https://travis-ci.org/restify/errors.svg?branch=master)](https://travis-ci.org/restify/errors)
+[![Coverage Status](https://coveralls.io/repos/restify/errors/badge.svg?branch=master)](https://coveralls.io/r/restify/errors?branch=master)
+[![Dependency Status](https://david-dm.org/restify/errors.svg)](https://david-dm.org/restify/errors)
+[![devDependency Status](https://david-dm.org/restify/errors/dev-status.svg)](https://david-dm.org/restify/errors#info=devDependencies)
+[![bitHound Score](https://www.bithound.io/github/restify/errors/badges/score.svg)](https://www.bithound.io/github/restify/errors/master)
+
 > A collection of HTTP and REST Error constructors.
 
 The constructors can be used to new up Error objects with default status codes
@@ -113,10 +120,10 @@ function redirectIfErr(req, res, next) {
 
 ### Rendering Errors
 
-All Error objects in this module are created a `body` property. Restify
-supports 'rendering' Errors as a response, using the `body` property.
-You can pass Errors to `res.send` and the error will be rendered out as JSON,
-using the Error object's status code:
+All Error objects in this module are created with a `body` property. Restify
+supports 'rendering' Errors as a response using this property. You can pass
+Errors to `res.send` and the error will be rendered out as JSON, using the
+Error object's status code:
 
 ```js
 function render(req, res, next) {
@@ -162,8 +169,7 @@ function render(req, res, next) {
 
 Like [WError](https://github.com/davepacheco/node-verror), all constructors
 accept an Error object as the first argument to build rich Error objects and
-stack traces. Assume a previous file lookup failed and an error was passed on
-to the next handler:
+stack traces. Assume a previous file lookup failed and an error was passed on:
 
 ```js
 function wrapError(req, res, next) {
@@ -214,6 +220,30 @@ For more information about building rich errors, check out
 [VError](https://github.com/davepacheco/node-verror).
 
 
+### Subclassing Errors
+
+You can also create your own Error subclasses by using the provided `makeError`
+method:
+
+```js
+var ExecutionError = errors.makeError('ExecutionError', 406);
+var myErr = new ExecutionError('bad joystick input!');
+
+console.log(myErr instanceof ExecutionError);
+// => true
+
+console.log(myErr.message);
+// => 'ExecutionError: bad joystick input!'
+
+console.log(myErr.statusCode);
+// => 406
+```
+
+Custom errors are subclassed from RestError, so you get all the built-in
+goodness of HttpErrors and RestErrors. Your constructor supports all the
+previously covered signatures.
+
+
 ## API
 
 All error constructors are variadic and accept the following signatures:
@@ -223,26 +253,26 @@ All error constructors are variadic and accept the following signatures:
 ### new Error(priorErr, message)
 ### new Error(priorErr, options)
 
-All VError and WError signatures are also supported, including
-(extsprintf)[https://github.com/davepacheco/node-extsprintf].
+All [VError and WError](https://github.com/davepacheoco/node-verror) signatures
+are also supported, including
+[extsprintf](https://github.com/davepacheco/node-extsprintf).
 
-The error instances will have the following properties once created:
-* `statusCode` {Number} - an http status code
-* `name` {String}
-* `restCode` {String}
-* `body` {Object} - this is used by Restify to render the Error as an objecteasily send out an Error object
-as a response.
-* `body.code` {String}
-* `body.message` {String}
-
-#### message {String}
-
-
-#### options
+* `message` {String} - an error message
 * `options.message` {String} - an error message string
 * `options.statusCode` {Number} - an http status code
 * `options.constructorOpt` {Function} - Error constructor function for cleaner stack traces
 * `options.restCode` {Number} - a name for your Error (deprecate?)
+* `priorErr` {Error} - an instance of an Error
+
+**Returns:** {Error} an Error object
+
+### makeError(name)
+
+Creates a custom Error constructor.
+
+* `name` {String} - the name of your Error
+
+**Returns:** {Function} an Error constructor
 
 
 ## Contributing
@@ -253,7 +283,7 @@ checks pass.
 To start contributing, install the git pre-push hooks:
 
 ```sh
-npm run githook
+npm run githooks
 ```
 
 Before committing, run the prepush hook:

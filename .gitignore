@@ -12,5 +12,5 @@ Thumbs.db
 npm-debug.log
 
 # build task results for ci
-/ci/
+coverage/
 

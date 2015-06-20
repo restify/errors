@@ -1,10 +1,13 @@
 'use strict';
 
 var helpers = require('./helpers');
+var globs   = require('./globs');
+
 
 //------------------------------------------------------------------------------
 // code style task
 //------------------------------------------------------------------------------
+
 
 /**
  * helper function for running jscs with different args.
@@ -24,13 +27,9 @@ function codestyle(binArgs, cb) {
 
 
 module.exports.read = function read(cb) {
-    if (helpers.isCI()) {
-        codestyle(['.', '--verbose', '--colors', '--reporter', 'junit'], cb);
-    } else {
-        codestyle(['.', '--verbose', '--colors'], cb);
-    }
+    codestyle([globs.lib, globs.test, '--verbose', '--colors'], cb);
 };
 
 module.exports.readAndFix = function readAndFix(cb) {
-    codestyle(['.', '--fix', '--verbose', '--colors'], cb);
+    codestyle([globs.lib, globs.test, '--fix', '--verbose', '--colors'], cb);
 };

@@ -5,6 +5,7 @@ var gulp = require('gulp');
 //------------------------------------------------------------------------------
 // Install git precommit hooks
 //------------------------------------------------------------------------------
+
 function githooks() {
     var symlink = require('gulp-symlink');
 
