@@ -16,11 +16,8 @@ var helpers = require('./helpers');
  */
 function run(cb) {
 
-    helpers.spawnBinary({
-        name: 'istanbul',
-        args: ['cover', '_mocha'],
-        fileOutput: 'test.xml',
-        errorMessage: 'Unit test errors found'
+    helpers.spawnNodeBinary({
+        cmd: ['mocha', '-R', 'spec', '--colors']
     }, cb);
 }
 

@@ -1,7 +1,7 @@
 'use strict';
 
 var helpers = require('./helpers');
-var globs   = require('./globs');
+var globs   = require('./../globs');
 
 
 //------------------------------------------------------------------------------
@@ -17,11 +17,9 @@ var globs   = require('./globs');
  * @returns {void}
  */
 function codestyle(binArgs, cb) {
-    helpers.spawnBinary({
-        name: 'jscs',
-        args: binArgs,
-        fileOutput: 'codestyle.xml',
-        errorMessage: 'Code style errors found'
+
+    helpers.spawnNodeBinary({
+        cmd: ['jscs'].concat(binArgs)
     }, cb);
 }
 

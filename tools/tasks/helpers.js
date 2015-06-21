@@ -11,14 +11,17 @@ var assert = require('assert-plus');
 /**
  * attaches a handler to the exit event of the child process,
  * exits returns an err to the callback if necessary.
- * @param   {Object}   childProc     stream object of the process
- * @param   {String}   message       an error message
- * @param   {Function} cb            gulp task callback
- * @returns {void}
+ * @private
+ * @function handleProcessExit
+ * @param    {Object}   childProc      stream object of the process
+ * @param    {String}   message        an error message
+ * @param    {Function} cb             gulp task callback
+ * @returns  {void}
  */
 function handleProcessExit(childProc, message, cb) {
 
     childProc.on('exit', function(exitCode) {
+
         // check the child process exit code.
         if (exitCode) {
             return cb(new Error(message));
@@ -29,35 +32,44 @@ function handleProcessExit(childProc, message, cb) {
 
 
 /**
- * returns a process stream from node_modules/.bin
- * @param   {Object} options an options object
- * @param   {Function} cb    gulp task callback
- * @returns {Object}         process stream
+ * returns a process stream
+ * @public
+ * @function spawn
+ * @param    {Object} options an options object
+ * @param    {Function} cb    gulp task callback
+ * @returns  {Stream}         process stream
  */
 function spawnBinary(options, cb) {
+
     // assert required things are here
     assert.object(options, 'options');
-    assert.string(options.name, 'options.name');
-    assert.optionalString(options.errorMessage, 'options.errorMessage');
-    assert.optionalString(options.fileOutput, 'options.fileOutput');
+    assert.arrayOfString(options.cmd, 'options.cmd');
     assert.func(cb, 'callback');
+    assert.optionalString(options.errorMessage, 'options.errorMessage');
+    assert.optionalBool(options.nodeBinary, 'options.nodeBinary');
 
     var spawn = require('child_process').spawn;
 
     // normalize vars
-    var binName = options.name;
-    var binArgs = options.args || [];
+    var binName = options.cmd.shift();
+    var binArgs = options.cmd; // assign remaining params as args
+    var downstreamProc = options.downstream;
     var errMsg = options.errorMessage || 'Errors found.';
-    var fileOutput = options.fileOutput || '';
 
-    // pipe all the input through parent process, so when we exit parent
-    // process due to a build failure, they won't continue spewing logs
-    // in the background.
-    var childProc = spawn('node_modules/.bin/' + binName, binArgs);
+    // depending on if downstream was passed in, decide whether or not to
+    // create the process with stdio set to pipe (default) or back to the
+    // process's io (inherit)
+    var childProc = spawn(binName,
+                            binArgs,
+                            {
+                                stdio: downstreamProc ? 'pipe' : 'inherit'
+                            });
 
-    // stream the IO from the child process back to terminal, or possibly
-    // to a file if provided (usually in the case of CI, for junit output)
-    pipeIO(childProc, binName, fileOutput);
+    // if we have downstreamProc, pipe it in now.
+    if (downstreamProc) {
+        childProc.stdout.pipe(downstreamProc.stdin);
+        childProc.stderr.pipe(downstreamProc.stdin);
+    }
 
     // hook the process back up to gulp, so that an exit code from the process
     // returns a proper error message.
@@ -68,15 +80,24 @@ function spawnBinary(options, cb) {
 
 
 /**
- * pipe child process stdout/stderr into current process
- * @param   {Object} childProc  a child process
- * @param   {String} binName    name of the binary
- * @param   {String} fileName   optional filename for CI
- * @returns {void}
+ * returns a process stream from node_modules/.bin
+ * @public
+ * @function spawnNodeBinary
+ * @param    {Object}   options an options object
+ * @param    {Function} cb      gulp task callback
+ * @returns  {Stream}           process stream
  */
-function pipeIO(childProc, binName, fileName) {
-    childProc.stdout.pipe(process.stdout);
-    childProc.stderr.pipe(process.stderr);
+function spawnNodeBinary(options, cb) {
+    // assert required things are here
+    assert.object(options, 'options');
+    assert.arrayOfString(options.cmd, 'options.cmd');
+    assert.func(cb, 'callback');
+    assert.optionalString(options.errorMessage, 'options.errorMessage');
+
+    // prepend bin path with node_modules
+    options.cmd[0] = 'node_modules/.bin/' + options.cmd[0];
+
+    return spawnBinary(options, cb);
 }
 
 
@@ -84,12 +105,15 @@ function pipeIO(childProc, binName, fileName) {
  * builds the project in serial, only used by prepush task.
  * doesn't do anything on top of gulp other than give a pretty banner
  * for when tasks fail.
- * @param   {Array}    tasks      an array of task names to run
- * @param   {Function} cb         gulp task callback
- * @returns {void}
+ * @public
+ * @function runSerial
+ * @param    {Array}    tasks      an array of task names to run
+ * @param    {Function} cb         gulp task callback
+ * @returns  {void}
  */
 function runSerial(tasks, cb) {
-    var run = require('run-sequence');
+
+    var runSequence = require('run-sequence');
 
     // run-sequence calls the complete callback on the FIRST task error
     // it encounters. that means we can only log errors on the first error
@@ -137,8 +161,10 @@ function runSerial(tasks, cb) {
         return cb(err ? new Error('Build failure.') : null);
     }
 
-    run.apply(run, tasks.concat(runComplete));
+    runSequence.apply(runSequence, tasks.concat(runComplete));
 }
 
-module.exports.spawnBinary = spawnBinary;
+
+module.exports.spawnNodeBinary = spawnNodeBinary;
+module.exports.spawn = spawnBinary;
 module.exports.runSerial = runSerial;

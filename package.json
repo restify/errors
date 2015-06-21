@@ -28,10 +28,11 @@
     "restify-clients"
   ],
   "scripts": {
+    "fix-codestyle": "gulp codestyleFix",
     "githooks": "gulp githooks",
     "build": "gulp",
     "prepush": "gulp prepush",
-    "report": "gulp report",
+    "report": "istanbul cover _mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | coveralls",
     "test": "gulp test"
   },
   "devDependencies": {
@@ -46,7 +47,8 @@
     "jscs": "^1.13.1",
     "mkdirp": "^0.5.1",
     "mocha": "^2.2.5",
-    "run-sequence": "^1.1.1"
+    "run-sequence": "^1.1.1",
+    "vasync": "^1.6.3"
   },
   "dependencies": {
     "assert-plus": "^0.1.5",

@@ -237,12 +237,23 @@ console.log(myErr.message);
 
 console.log(myErr.statusCode);
 // => 406
+
+console.log(myErr.stack);
+
+ExecutionError: bad joystick input!
+    at Object.<anonymous> (/Users/restify/test.js:30:16)
+    at Module._compile (module.js:460:26)
+    at Object.Module._extensions..js (module.js:478:10)
+    at Module.load (module.js:355:32)
+    at Function.Module._load (module.js:310:12)
+    at Function.Module.runMain (module.js:501:10)
+    at startup (node.js:129:16)
+    at node.js:814:3
 ```
 
 Custom errors are subclassed from RestError, so you get all the built-in
-goodness of HttpErrors and RestErrors. Your constructor supports all the
-previously covered signatures.
-
+goodness of HttpError/RestError. The constructor returned to you accepts
+all the same signatures accepted by HttpError/RestError.
 
 ## API
 
@@ -257,12 +268,19 @@ All [VError and WError](https://github.com/davepacheoco/node-verror) signatures
 are also supported, including
 [extsprintf](https://github.com/davepacheco/node-extsprintf).
 
+You can pass in a message like a regular error:
+
 * `message` {String} - an error message
+
+Or pass in an options object for more customization:
+
 * `options.message` {String} - an error message string
 * `options.statusCode` {Number} - an http status code
-* `options.constructorOpt` {Function} - Error constructor function for cleaner stack traces
 * `options.restCode` {Number} - a name for your Error (deprecate?)
-* `priorErr` {Error} - an instance of an Error
+
+In either scenario, you can also optionally pass in another Error:
+
+* `priorErr` {Error} - an Error object
 
 **Returns:** {Error} an Error object
 
