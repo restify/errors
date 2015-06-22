@@ -399,9 +399,12 @@ describe('restify-errors node module.', function() {
             });
         });
 
-        it('should create custom RestError subclass', function() {
+        it('should create custom error using "make"', function() {
             var underlyingErr = new Error('underlying error!');
-            var ExecutionError = restifyErrors.make('ExecutionError', 406);
+            var ExecutionError = restifyErrors.makeConstructor('ExecutionError', {
+                statusCode: 406,
+                failureType: 'motion'
+            });
             var err = new ExecutionError(underlyingErr, 'bad joystick input');
 
             assert.equal(err instanceof ExecutionError, true);
@@ -411,6 +414,7 @@ describe('restify-errors node module.', function() {
             assert.equal(err instanceof Error, true);
             assert.equal(err.message, 'bad joystick input');
             assert.equal(err.statusCode, 406);
+            assert.equal(err.failureType, 'motion');
             assert.isObject(err.body);
             assert.equal(err.body.code, 'Error');
             assert.equal(err.body.message, 'bad joystick input');

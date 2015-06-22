@@ -221,11 +221,14 @@ For more information about building rich errors, check out
 
 ### Subclassing Errors
 
-You can also create your own Error subclasses by using the provided `makeError`
-method:
+You can also create your own Error subclasses by using the provided
+`makeConstructor()` method:
 
 ```js
-var ExecutionError = errors.makeError('ExecutionError', 406);
+var ExecutionError = errors.makeConstructor('ExecutionError', {
+    statusCode: 406,
+    failureType: 'motion'
+});
 var myErr = new ExecutionError('bad joystick input!');
 
 console.log(myErr instanceof ExecutionError);
@@ -233,6 +236,9 @@ console.log(myErr instanceof ExecutionError);
 
 console.log(myErr.message);
 // => 'ExecutionError: bad joystick input!'
+
+console.log(myErr.failureType);
+// => 'motion'
 
 console.log(myErr.statusCode);
 // => 406
@@ -260,10 +266,10 @@ All error constructors are variadic and accept the following signatures:
 
 ### new Error(message)
 ### new Error(sprintf, args...)
-### new Error(options, [sprintf, args...])
+### new Error(options [, sprintf, args...])
 ### new Error(priorErr, message)
 ### new Error(priorErr, sprintf, args...)
-### new Error(priorErr, options, [sprintf, args...])
+### new Error(priorErr, options [, sprintf, args...])
 
 All [VError and WError](https://github.com/davepacheoco/node-verror) signatures
 are also supported, including
@@ -292,16 +298,17 @@ which will cause WError to use it as a prior cause:
 **IMPORTANT:** If a sprintf style signature is used, the Error message will
 prefer that over `options.message`.
 
-### make(name, [statusCode])
+### make(name [,defaults])
 
 Creates a custom Error constructor.
 
 * `name` {String} - the name of your Error
-* `statusCode` {Number} - default http status code associated with this Error
+* `defaults` {Object} - an object of default values that will added to the
+prototype.
 
 **Returns:** {Function} an Error constructor, inherits from RestError
 
-### makeErrFromCode(name, [args...])
+### makeErrFromCode(name [, args...])
 
 Create an Error object using an http status code. This uses `http` module's
 `STATUS_CODES` to do the status code lookup. Thus, this convenience method
