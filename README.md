@@ -120,7 +120,7 @@ function redirectIfErr(req, res, next) {
 
 ### Rendering Errors
 
-All Error objects in this module are created with a `body` property. Restify
+All Error objects in this module are created with a `body` property. restify
 supports 'rendering' Errors as a response using this property. You can pass
 Errors to `res.send` and the error will be rendered out as JSON, using the
 Error object's status code:
@@ -278,9 +278,13 @@ Or pass in an options object for more customization:
 
 * `options.message` {String} - an error message string
 * `options.statusCode` {Number} - an http status code
-* `options.restCode` {Number} - a name for your Error (deprecate?)
+* `options.restCode` {Number} - a description code for your Error. This is used
+by restify to render an error when it is directly passed to `res.send()`. By
+default, it is the name of your error constructor (e.g., the restCode for a
+BadDigestError is BadDigest).
 
-In either scenario, you can also optionally pass in another Error:
+In all signatures, you can optionally pass in an Error as the first argument,
+which will cause WError to use it as a prior cause:
 
 * `priorErr` {Error} - an Error object
 

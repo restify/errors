@@ -240,11 +240,11 @@ describe('restify-errors node module.', function() {
             var myErr = new restErrors.BadDigestError('missing file: "%s"', 'foobar');
 
             assert.equal(myErr.name, 'BadDigestError');
-            assert.equal(myErr.restCode, 'BadDigestError');
+            assert.equal(myErr.restCode, 'BadDigest');
             assert.equal(myErr.statusCode, 400);
             assert.isObject(myErr.body);
             assert.equal(myErr.body.message, 'missing file: "foobar"');
-            assert.equal(myErr.body.code, 'BadDigestError');
+            assert.equal(myErr.body.code, 'BadDigest');
         });
 
         it('should create BadDigestError using options, should prefer sprintf over options', function() {
@@ -389,6 +389,14 @@ describe('restify-errors node module.', function() {
             // again, no way to know since we programatically create errors,
             // but ensure at least we have all RestErrors
             assert.isAbove(_.size(restifyErrors), 30);
+        });
+
+        it('should have restCode properties for all RestCode constructors', function() {
+            _.forEach(restErrors, function(RestErr) {
+                var err = new RestErr();
+                // strip off the last 5 chars ('Error') and do an assertion
+                assert.equal(err.restCode, RestErr.displayName.slice(0, -5));
+            });
         });
 
         it('should create custom RestError subclass', function() {
