@@ -122,8 +122,7 @@ function redirectIfErr(req, res, next) {
 
 All Error objects in this module are created with a `body` property. restify
 supports 'rendering' Errors as a response using this property. You can pass
-Errors to `res.send` and the error will be rendered out as JSON, using the
-Error object's status code:
+Errors to `res.send` and the error will be rendered out as JSON:
 
 ```js
 function render(req, res, next) {
