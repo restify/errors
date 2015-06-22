@@ -260,9 +260,11 @@ all the same signatures accepted by HttpError/RestError.
 All error constructors are variadic and accept the following signatures:
 
 ### new Error(message)
-### new Error(options)
+### new Error(sprintf, args...)
+### new Error(options, [sprintf, args...])
 ### new Error(priorErr, message)
-### new Error(priorErr, options)
+### new Error(priorErr, sprintf, args...)
+### new Error(priorErr, options, [sprintf, args...])
 
 All [VError and WError](https://github.com/davepacheoco/node-verror) signatures
 are also supported, including
@@ -284,13 +286,28 @@ In either scenario, you can also optionally pass in another Error:
 
 **Returns:** {Error} an Error object
 
-### makeError(name)
+**IMPORTANT:** If a sprintf style signature is used, the Error message will
+prefer that over `options.message`.
+
+### make(name, [statusCode])
 
 Creates a custom Error constructor.
 
 * `name` {String} - the name of your Error
+* `statusCode` {Number} - default http status code associated with this Error
 
-**Returns:** {Function} an Error constructor
+**Returns:** {Function} an Error constructor, inherits from RestError
+
+### makeErrFromCode(name, [args...])
+
+Create an Error object using an http status code. This uses `http` module's
+`STATUS_CODES` to do the status code lookup. Thus, this convenience method
+is useful only for creating HttpErrors, and not RestErrors.
+
+* `statusCode` {Number} - an http status code
+* `args` - arguments to be passed on to the constructor
+
+**Returns:** {Object} an Error object
 
 
 ## Contributing
@@ -312,6 +329,6 @@ npm run prepush
 
 ## License
 
-Copyright (c) 2015 Netflix, Inc.
+Copyright (c) 2015 Alex Liu
 
 Licensed under the MIT license.

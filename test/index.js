@@ -246,6 +246,21 @@ describe('restify-errors node module.', function() {
             assert.equal(myErr.body.message, 'missing file: "foobar"');
             assert.equal(myErr.body.code, 'BadDigestError');
         });
+
+        it('should create BadDigestError using options, should prefer sprintf over options', function() {
+            var myErr = new restErrors.BadDigestError({
+                restCode: 'Bad Digestion',
+                message: 'this error should not match'
+            }, 'missing file: "%s"', 'foobar');
+
+            assert.equal(myErr.name, 'BadDigestError');
+            assert.equal(myErr.restCode, 'Bad Digestion');
+            assert.equal(myErr.statusCode, 400);
+            assert.isObject(myErr.body);
+            assert.equal(myErr.body.message, 'missing file: "foobar"');
+            assert.equal(myErr.body.code, 'Bad Digestion');
+
+        });
     });
 
     describe('helpers', function() {
@@ -355,9 +370,8 @@ describe('restify-errors node module.', function() {
         it('should export a constructor for every built-in RestError type', function() {
             // no good way to verify we got all the constructors, so it's hard
             // coded for now.
-            // 15 built-in RestError subclasses
-
-            assert.equal(_.size(restErrors), 15);
+            // 16 built-in RestError subclasses
+            assert.equal(_.size(restErrors), 16);
 
             // ensure each one has a displayName that ends in 'Error'
             // then try to new up one of each.
@@ -379,7 +393,7 @@ describe('restify-errors node module.', function() {
 
         it('should create custom RestError subclass', function() {
             var underlyingErr = new Error('underlying error!');
-            var ExecutionError = restifyErrors.makeError('ExecutionError', 406);
+            var ExecutionError = restifyErrors.make('ExecutionError', 406);
             var err = new ExecutionError(underlyingErr, 'bad joystick input');
 
             assert.equal(err instanceof ExecutionError, true);
@@ -393,6 +407,20 @@ describe('restify-errors node module.', function() {
             assert.equal(err.body.code, 'Error');
             assert.equal(err.body.message, 'bad joystick input');
             assert.equal(err.we_cause, underlyingErr);
+        });
+
+        it('should create an error from an http status code', function() {
+            var err = restifyErrors.makeErrFromCode(406, 'the horror');
+
+            assert.equal(err instanceof restifyErrors.NotAcceptableError, true);
+            assert.equal(err instanceof HttpError, true);
+            assert.equal(err instanceof WError, true);
+            assert.equal(err instanceof Error, true);
+            assert.equal(err.message, 'the horror');
+            assert.equal(err.statusCode, 406);
+            assert.isObject(err.body);
+            assert.equal(err.body.code, 'NotAcceptableError');
+            assert.equal(err.body.message, 'the horror');
         });
     });
 });
