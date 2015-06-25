@@ -247,7 +247,7 @@ describe('restify-errors node module.', function() {
             assert.equal(myErr.body.code, 'BadDigest');
         });
 
-        it('should create BadDigestError using options, should prefer sprintf over options', function() {
+        it('should create BadDigestError using options, should prefer printf over options', function() {
             var myErr = new restErrors.BadDigestError({
                 restCode: 'Bad Digestion',
                 message: 'this error should not match'

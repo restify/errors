@@ -3,6 +3,8 @@
 var gutil = require('gulp-util');
 var assert = require('assert-plus');
 
+// local globals
+var NODE_BIN_PATH = './node_modules/.bin/';
 
 //------------------------------------------------------------------------------
 // general helper functions
@@ -95,7 +97,7 @@ function spawnNodeBinary(options, cb) {
     assert.optionalString(options.errorMessage, 'options.errorMessage');
 
     // prepend bin path with node_modules
-    options.cmd[0] = 'node_modules/.bin/' + options.cmd[0];
+    options.cmd[0] = NODE_BIN_PATH + options.cmd[0];
 
     return spawnBinary(options, cb);
 }

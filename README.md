@@ -265,11 +265,11 @@ all the same signatures accepted by HttpError/RestError.
 All error constructors are variadic and accept the following signatures:
 
 ### new Error(message)
-### new Error(sprintf, args...)
-### new Error(options [, sprintf, args...])
+### new Error(printf, args...)
+### new Error(options [, printf, args...])
 ### new Error(priorErr, message)
-### new Error(priorErr, sprintf, args...)
-### new Error(priorErr, options [, sprintf, args...])
+### new Error(priorErr, printf, args...)
+### new Error(priorErr, options [, printf, args...])
 
 All [VError and WError](https://github.com/davepacheoco/node-verror) signatures
 are also supported, including
@@ -295,7 +295,7 @@ which will cause WError to use it as a prior cause:
 
 **Returns:** {Error} an Error object
 
-**IMPORTANT:** If a sprintf style signature is used, the Error message will
+**IMPORTANT:** If a printf style signature is used, the Error message will
 prefer that over `options.message`.
 
 ### makeConstructor(name [,defaults])
