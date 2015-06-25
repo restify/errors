@@ -267,8 +267,8 @@ All error constructors are variadic and accept the following signatures:
 ### new Error(message)
 ### new Error(printf, args...)
 ### new Error(options [, printf, args...])
-### new Error(priorErr, message)
-### new Error(priorErr, printf, args...)
+### new Error(priorErr, message])
+### new Error(priorErr [, printf, args...])
 ### new Error(priorErr, options [, printf, args...])
 
 All [VError and WError](https://github.com/davepacheoco/node-verror) signatures
@@ -298,7 +298,7 @@ which will cause WError to use it as a prior cause:
 **IMPORTANT:** If a printf style signature is used, the Error message will
 prefer that over `options.message`.
 
-### makeConstructor(name [,defaults])
+### makeConstructor(name [, defaults])
 
 Creates a custom Error constructor.
 
@@ -328,13 +328,19 @@ checks pass.
 To start contributing, install the git pre-push hooks:
 
 ```sh
-npm run githooks
+make githooks
 ```
 
 Before committing, run the prepush hook:
 
 ```sh
-npm run prepush
+make prepush
+```
+
+If you have style errors, you can auto fix whitespace issues by running:
+
+```sh
+make codestyle-fix
 ```
 
 ## License
