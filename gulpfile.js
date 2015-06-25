@@ -2,7 +2,7 @@
 
 var gulp    = require('gulp');
 
-var helpers = require('./build/helpers');
+var helpers = require('./tools/tasks/helpers');
 
 //------------------------------------------------------------------------------
 // local global vars
@@ -13,13 +13,12 @@ var TASKS = ['lint', 'codestyle', 'test'];
 //------------------------------------------------------------------------------
 // register all sub tasks
 //------------------------------------------------------------------------------
-gulp.task('lint',           require('./build/lint'));
-gulp.task('codestyle',      require('./build/codestyle').read);
-gulp.task('codestyleFix',   require('./build/codestyle').readAndFix);
-gulp.task('test',           require('./build/test').run);
-gulp.task('watchTests',     require('./build/test').watchAndRun);
-gulp.task('githooks',       require('./build/githooks'));
-gulp.task('report',         require('./build/report'));
+gulp.task('lint',           require('./tools/tasks/lint'));
+gulp.task('codestyle',      require('./tools/tasks/codestyle').read);
+gulp.task('codestyleFix',   require('./tools/tasks/codestyle').readAndFix);
+gulp.task('test',           require('./tools/tasks/test').run);
+gulp.task('watchTests',     require('./tools/tasks/test').watchAndRun);
+gulp.task('githooks',       require('./tools/tasks/githooks'));
 
 //------------------------------------------------------------------------------
 // register top level tasks exposed to npm.

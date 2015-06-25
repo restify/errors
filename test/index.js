@@ -240,11 +240,26 @@ describe('restify-errors node module.', function() {
             var myErr = new restErrors.BadDigestError('missing file: "%s"', 'foobar');
 
             assert.equal(myErr.name, 'BadDigestError');
-            assert.equal(myErr.restCode, 'BadDigestError');
+            assert.equal(myErr.restCode, 'BadDigest');
             assert.equal(myErr.statusCode, 400);
             assert.isObject(myErr.body);
             assert.equal(myErr.body.message, 'missing file: "foobar"');
-            assert.equal(myErr.body.code, 'BadDigestError');
+            assert.equal(myErr.body.code, 'BadDigest');
+        });
+
+        it('should create BadDigestError using options, should prefer printf over options', function() {
+            var myErr = new restErrors.BadDigestError({
+                restCode: 'Bad Digestion',
+                message: 'this error should not match'
+            }, 'missing file: "%s"', 'foobar');
+
+            assert.equal(myErr.name, 'BadDigestError');
+            assert.equal(myErr.restCode, 'Bad Digestion');
+            assert.equal(myErr.statusCode, 400);
+            assert.isObject(myErr.body);
+            assert.equal(myErr.body.message, 'missing file: "foobar"');
+            assert.equal(myErr.body.code, 'Bad Digestion');
+
         });
     });
 
@@ -287,7 +302,7 @@ describe('restify-errors node module.', function() {
             var parsed = parse('missing file: "%s"', 'foobar');
 
             assert.deepEqual(parsed.args, [ 'missing file: "%s"', 'foobar']);
-            assert.deepEqual(parsed.options, {});
+            assert.deepEqual(parsed.options, null);
         });
 
         it('should parse variadic arguments with priorCause and strings (pass through to WError)', function() {
@@ -296,7 +311,7 @@ describe('restify-errors node module.', function() {
             var parsed = parse(err, 'a', 'b', 'c');
 
             assert.deepEqual(parsed.args, [ err, 'a', 'b', 'c' ]);
-            assert.deepEqual(parsed.options, {});
+            assert.deepEqual(parsed.options, null);
         });
 
         it('should strip options object when super constructor is WError (with prior cause)', function() {
@@ -322,6 +337,67 @@ describe('restify-errors node module.', function() {
 
             assert.deepEqual(parsed.args, []);
             assert.deepEqual(parsed.options, options);
+        });
+    });
+
+    describe('stack trace cleanliness', function() {
+        it('should have test file as first line of HttpError stack trace', function testStack1() {
+            var httpErr = new HttpError('http error');
+            var stack = httpErr.stack.split('\n');
+
+            // ensure stack trace's first line is the test file.
+            assert.equal(_.includes(stack[0], 'HttpError: http error'), true);
+            assert.equal(_.includes(stack[1], 'Context.testStack1'), true);
+            assert.equal(_.includes(stack[1], 'test/index.js'), true);
+        });
+
+        it('should have test file as first line of built-in HttpError stack trace', function testStack2() {
+            // test built in http errors
+            var badReqErr = new httpErrors.BadRequestError('i am bad');
+            var stack = badReqErr.stack.split('\n');
+
+            assert.equal(_.includes(stack[0], 'BadRequestError: i am bad'), true);
+            assert.equal(_.includes(stack[1], 'Context.testStack2'), true);
+            assert.equal(_.includes(stack[1], 'test/index.js'), true);
+        });
+
+        it('should have test file as first line in RestError stack trace', function testStack3() {
+            // test built in http errors
+            var restErr = new RestError('i am rest');
+            var stack = restErr.stack.split('\n');
+
+            assert.equal(_.includes(stack[0], 'RestError: i am rest'), true);
+            assert.equal(_.includes(stack[1], 'Context.testStack3'), true);
+            assert.equal(_.includes(stack[1], 'test/index.js'), true);
+        });
+
+        it('should have test file as first line of built-in RestError stack trace', function testStack4() {
+            // test built in http errors
+            var badDigestError = new restErrors.BadDigestError('indigestion');
+            var stack = badDigestError.stack.split('\n');
+
+            assert.equal(_.includes(stack[0], 'BadDigestError: indigestion'), true);
+            assert.equal(_.includes(stack[1], 'Context.testStack4'), true);
+            assert.equal(_.includes(stack[1], 'test/index.js'), true);
+        });
+
+        it('should have test file as first line of subclass error stack trace', function testStack5() {
+            var ExecutionError = restifyErrors.makeConstructor('ExecutionError');
+            var err = new ExecutionError('did not charge long enough');
+            var stack = err.stack.split('\n');
+
+            assert.equal(_.includes(stack[0], 'ExecutionError: did not charge long enough'), true);
+            assert.equal(_.includes(stack[1], 'Context.testStack5'), true);
+            assert.equal(_.includes(stack[1], 'test/index.js'), true);
+        });
+
+        it('should have test file as first line of stack trace for error created via makeErrFromCode', function testStack6() {
+            var err = restifyErrors.makeErrFromCode(401, 'no creds');
+            var stack = err.stack.split('\n');
+
+            assert.equal(_.includes(stack[0], 'UnauthorizedError: no creds'), true);
+            assert.equal(_.includes(stack[1], 'Context.testStack6'), true);
+            assert.equal(_.includes(stack[1], 'test/index.js'), true);
         });
     });
 
@@ -355,9 +431,8 @@ describe('restify-errors node module.', function() {
         it('should export a constructor for every built-in RestError type', function() {
             // no good way to verify we got all the constructors, so it's hard
             // coded for now.
-            // 15 built-in RestError subclasses
-
-            assert.equal(_.size(restErrors), 15);
+            // 16 built-in RestError subclasses
+            assert.equal(_.size(restErrors), 16);
 
             // ensure each one has a displayName that ends in 'Error'
             // then try to new up one of each.
@@ -377,9 +452,20 @@ describe('restify-errors node module.', function() {
             assert.isAbove(_.size(restifyErrors), 30);
         });
 
-        it('should create custom RestError subclass', function() {
+        it('should have restCode properties for all RestCode constructors', function() {
+            _.forEach(restErrors, function(RestErr) {
+                var err = new RestErr();
+                // strip off the last 5 chars ('Error') and do an assertion
+                assert.equal(err.restCode, RestErr.displayName.slice(0, -5));
+            });
+        });
+
+        it('should create custom error using "make"', function() {
             var underlyingErr = new Error('underlying error!');
-            var ExecutionError = restifyErrors.makeError('ExecutionError', 406);
+            var ExecutionError = restifyErrors.makeConstructor('ExecutionError', {
+                statusCode: 406,
+                failureType: 'motion'
+            });
             var err = new ExecutionError(underlyingErr, 'bad joystick input');
 
             assert.equal(err instanceof ExecutionError, true);
@@ -389,10 +475,25 @@ describe('restify-errors node module.', function() {
             assert.equal(err instanceof Error, true);
             assert.equal(err.message, 'bad joystick input');
             assert.equal(err.statusCode, 406);
+            assert.equal(err.failureType, 'motion');
             assert.isObject(err.body);
             assert.equal(err.body.code, 'Error');
             assert.equal(err.body.message, 'bad joystick input');
             assert.equal(err.we_cause, underlyingErr);
+        });
+
+        it('should create an error from an http status code', function() {
+            var err = restifyErrors.makeErrFromCode(406, 'the horror');
+
+            assert.equal(err instanceof restifyErrors.NotAcceptableError, true);
+            assert.equal(err instanceof HttpError, true);
+            assert.equal(err instanceof WError, true);
+            assert.equal(err instanceof Error, true);
+            assert.equal(err.message, 'the horror');
+            assert.equal(err.statusCode, 406);
+            assert.isObject(err.body);
+            assert.equal(err.body.code, 'NotAcceptableError');
+            assert.equal(err.body.message, 'the horror');
         });
     });
 });

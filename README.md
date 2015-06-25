@@ -120,7 +120,7 @@ function redirectIfErr(req, res, next) {
 
 ### Rendering Errors
 
-All Error objects in this module are created with a `body` property. Restify
+All Error objects in this module are created with a `body` property. restify
 supports 'rendering' Errors as a response using this property. You can pass
 Errors to `res.send` and the error will be rendered out as JSON:
 
@@ -221,11 +221,14 @@ For more information about building rich errors, check out
 
 ### Subclassing Errors
 
-You can also create your own Error subclasses by using the provided `makeError`
-method:
+You can also create your own Error subclasses by using the provided
+`makeConstructor()` method:
 
 ```js
-var ExecutionError = errors.makeError('ExecutionError', 406);
+var ExecutionError = errors.makeConstructor('ExecutionError', {
+    statusCode: 406,
+    failureType: 'motion'
+});
 var myErr = new ExecutionError('bad joystick input!');
 
 console.log(myErr instanceof ExecutionError);
@@ -234,44 +237,87 @@ console.log(myErr instanceof ExecutionError);
 console.log(myErr.message);
 // => 'ExecutionError: bad joystick input!'
 
+console.log(myErr.failureType);
+// => 'motion'
+
 console.log(myErr.statusCode);
 // => 406
+
+console.log(myErr.stack);
+
+ExecutionError: bad joystick input!
+    at Object.<anonymous> (/Users/restify/test.js:30:16)
+    at Module._compile (module.js:460:26)
+    at Object.Module._extensions..js (module.js:478:10)
+    at Module.load (module.js:355:32)
+    at Function.Module._load (module.js:310:12)
+    at Function.Module.runMain (module.js:501:10)
+    at startup (node.js:129:16)
+    at node.js:814:3
 ```
 
 Custom errors are subclassed from RestError, so you get all the built-in
-goodness of HttpErrors and RestErrors. Your constructor supports all the
-previously covered signatures.
-
+goodness of HttpError/RestError. The constructor returned to you accepts
+all the same signatures accepted by HttpError/RestError.
 
 ## API
 
 All error constructors are variadic and accept the following signatures:
 
 ### new Error(message)
-### new Error(options)
+### new Error(printf, args...)
+### new Error(options [, printf, args...])
 ### new Error(priorErr, message)
-### new Error(priorErr, options)
+### new Error(priorErr, printf, args...)
+### new Error(priorErr, options [, printf, args...])
 
 All [VError and WError](https://github.com/davepacheoco/node-verror) signatures
 are also supported, including
 [extsprintf](https://github.com/davepacheco/node-extsprintf).
 
+You can pass in a message like a regular error:
+
 * `message` {String} - an error message
+
+Or pass in an options object for more customization:
+
 * `options.message` {String} - an error message string
 * `options.statusCode` {Number} - an http status code
-* `options.constructorOpt` {Function} - Error constructor function for cleaner stack traces
-* `options.restCode` {Number} - a name for your Error (deprecate?)
-* `priorErr` {Error} - an instance of an Error
+* `options.restCode` {Number} - a description code for your Error. This is used
+by restify to render an error when it is directly passed to `res.send()`. By
+default, it is the name of your error constructor (e.g., the restCode for a
+BadDigestError is BadDigest).
+
+In all signatures, you can optionally pass in an Error as the first argument,
+which will cause WError to use it as a prior cause:
+
+* `priorErr` {Error} - an Error object
 
 **Returns:** {Error} an Error object
 
-### makeError(name)
+**IMPORTANT:** If a printf style signature is used, the Error message will
+prefer that over `options.message`.
+
+### makeConstructor(name [,defaults])
 
 Creates a custom Error constructor.
 
 * `name` {String} - the name of your Error
+* `defaults` {Object} - an object of default values that will added to the
+prototype.
 
-**Returns:** {Function} an Error constructor
+**Returns:** {Function} an Error constructor, inherits from RestError
+
+### makeErrFromCode(name [, args...])
+
+Create an Error object using an http status code. This uses `http` module's
+`STATUS_CODES` to do the status code lookup. Thus, this convenience method
+is useful only for creating HttpErrors, and not RestErrors.
+
+* `statusCode` {Number} - an http status code
+* `args` - arguments to be passed on to the constructor
+
+**Returns:** {Object} an Error object
 
 
 ## Contributing
