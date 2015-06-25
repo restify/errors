@@ -298,7 +298,7 @@ which will cause WError to use it as a prior cause:
 **IMPORTANT:** If a sprintf style signature is used, the Error message will
 prefer that over `options.message`.
 
-### make(name [,defaults])
+### makeConstructor(name [,defaults])
 
 Creates a custom Error constructor.
 

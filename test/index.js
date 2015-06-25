@@ -302,7 +302,7 @@ describe('restify-errors node module.', function() {
             var parsed = parse('missing file: "%s"', 'foobar');
 
             assert.deepEqual(parsed.args, [ 'missing file: "%s"', 'foobar']);
-            assert.deepEqual(parsed.options, {});
+            assert.deepEqual(parsed.options, null);
         });
 
         it('should parse variadic arguments with priorCause and strings (pass through to WError)', function() {
@@ -311,7 +311,7 @@ describe('restify-errors node module.', function() {
             var parsed = parse(err, 'a', 'b', 'c');
 
             assert.deepEqual(parsed.args, [ err, 'a', 'b', 'c' ]);
-            assert.deepEqual(parsed.options, {});
+            assert.deepEqual(parsed.options, null);
         });
 
         it('should strip options object when super constructor is WError (with prior cause)', function() {
@@ -337,6 +337,67 @@ describe('restify-errors node module.', function() {
 
             assert.deepEqual(parsed.args, []);
             assert.deepEqual(parsed.options, options);
+        });
+    });
+
+    describe('stack trace cleanliness', function() {
+        it('should have test file as first line of HttpError stack trace', function testStack1() {
+            var httpErr = new HttpError('http error');
+            var stack = httpErr.stack.split('\n');
+
+            // ensure stack trace's first line is the test file.
+            assert.equal(_.includes(stack[0], 'HttpError: http error'), true);
+            assert.equal(_.includes(stack[1], 'Context.testStack1'), true);
+            assert.equal(_.includes(stack[1], 'test/index.js'), true);
+        });
+
+        it('should have test file as first line of built-in HttpError stack trace', function testStack2() {
+            // test built in http errors
+            var badReqErr = new httpErrors.BadRequestError('i am bad');
+            var stack = badReqErr.stack.split('\n');
+
+            assert.equal(_.includes(stack[0], 'BadRequestError: i am bad'), true);
+            assert.equal(_.includes(stack[1], 'Context.testStack2'), true);
+            assert.equal(_.includes(stack[1], 'test/index.js'), true);
+        });
+
+        it('should have test file as first line in RestError stack trace', function testStack3() {
+            // test built in http errors
+            var restErr = new RestError('i am rest');
+            var stack = restErr.stack.split('\n');
+
+            assert.equal(_.includes(stack[0], 'RestError: i am rest'), true);
+            assert.equal(_.includes(stack[1], 'Context.testStack3'), true);
+            assert.equal(_.includes(stack[1], 'test/index.js'), true);
+        });
+
+        it('should have test file as first line of built-in RestError stack trace', function testStack4() {
+            // test built in http errors
+            var badDigestError = new restErrors.BadDigestError('indigestion');
+            var stack = badDigestError.stack.split('\n');
+
+            assert.equal(_.includes(stack[0], 'BadDigestError: indigestion'), true);
+            assert.equal(_.includes(stack[1], 'Context.testStack4'), true);
+            assert.equal(_.includes(stack[1], 'test/index.js'), true);
+        });
+
+        it('should have test file as first line of subclass error stack trace', function testStack5() {
+            var ExecutionError = restifyErrors.makeConstructor('ExecutionError');
+            var err = new ExecutionError('did not charge long enough');
+            var stack = err.stack.split('\n');
+
+            assert.equal(_.includes(stack[0], 'ExecutionError: did not charge long enough'), true);
+            assert.equal(_.includes(stack[1], 'Context.testStack5'), true);
+            assert.equal(_.includes(stack[1], 'test/index.js'), true);
+        });
+
+        it('should have test file as first line of stack trace for error created via makeErrFromCode', function testStack6() {
+            var err = restifyErrors.makeErrFromCode(401, 'no creds');
+            var stack = err.stack.split('\n');
+
+            assert.equal(_.includes(stack[0], 'UnauthorizedError: no creds'), true);
+            assert.equal(_.includes(stack[1], 'Context.testStack6'), true);
+            assert.equal(_.includes(stack[1], 'test/index.js'), true);
         });
     });
 

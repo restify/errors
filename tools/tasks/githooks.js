@@ -3,6 +3,7 @@
 var fs = require('fs');
 var path = require('path');
 
+var gutil = require('gulp-util');
 var vasync = require('vasync');
 
 //------------------------------------------------------------------------------
@@ -33,7 +34,15 @@ function githooks(callback) {
                 fs.unlink(destPath, function() {
                     // deletion may error if file doesn't exist, that's okay,
                     // ignore it. now symlink it
-                    fs.symlink(srcPath, destPath, innerCb);
+                    fs.symlink(srcPath, destPath, function(symlinkErr) {
+                        // log on success
+                        if (symlinkErr) {
+                            return innerCb(symlinkErr);
+                        }
+
+                        gutil.log('successfully symlinked', item);
+                        return innerCb();
+                    });
                 });
             },
             inputs: files
