@@ -27,6 +27,9 @@
     "errors",
     "restify-clients"
   ],
+  "scripts": {
+      "test": "make test"
+  },
   "devDependencies": {
     "chai": "^3.0.0",
     "coveralls": "^2.11.2",
