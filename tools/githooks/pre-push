@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # commit hook for JShint
-npm run prepush
+make prepush
 prepushProcess=$?
 
 # now output the stuff
