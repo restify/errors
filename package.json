@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "lib/index.js",
   "description": "Collection of Error objects shared across restify components.",
-  "homepage": "",
+  "homepage": "http://www.restify.com",
   "author": {
     "name": "Alex Liu",
     "email": "donutespresso@gmail.com"
@@ -15,7 +15,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/restify/errors.git"
   },
   "license": "MIT",
   "files": [
@@ -25,15 +25,19 @@
     "restify-errors",
     "restify",
     "errors",
-    "restify-clients"
+    "custom errors",
+    "inherit errors",
+    "http errors",
+    "http status code",
+    "rest errors"
   ],
   "scripts": {
-      "test": "make test"
+    "test": "make test"
   },
   "devDependencies": {
     "chai": "^3.0.0",
     "coveralls": "^2.11.2",
-    "eslint": "^0.23.0",
+    "eslint": "^0.24.0",
     "istanbul": "^0.3.15",
     "jscs": "^1.13.1",
     "mkdirp": "^0.5.1",
