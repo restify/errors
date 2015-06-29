@@ -382,11 +382,11 @@ describe('restify-errors node module.', function() {
         });
 
         it('should have test file as first line of subclass error stack trace', function testStack5() {
-            var ExecutionError = restifyErrors.makeConstructor('ExecutionError');
-            var err = new ExecutionError('did not charge long enough');
+            restifyErrors.makeConstructor('ChargeError');
+            var err = new restifyErrors.ChargeError('did not charge long enough');
             var stack = err.stack.split('\n');
 
-            assert.equal(_.includes(stack[0], 'ExecutionError: did not charge long enough'), true);
+            assert.equal(_.includes(stack[0], 'ChargeError: did not charge long enough'), true);
             assert.equal(_.includes(stack[1], 'Context.testStack5'), true);
             assert.equal(_.includes(stack[1], 'test/index.js'), true);
         });
@@ -460,15 +460,15 @@ describe('restify-errors node module.', function() {
             });
         });
 
-        it('should create custom error using "make"', function() {
+        it('should create custom error using makeConstructor', function() {
             var underlyingErr = new Error('underlying error!');
-            var ExecutionError = restifyErrors.makeConstructor('ExecutionError', {
+            restifyErrors.makeConstructor('ExecutionError', {
                 statusCode: 406,
                 failureType: 'motion'
             });
-            var err = new ExecutionError(underlyingErr, 'bad joystick input');
+            var err = new restifyErrors.ExecutionError(underlyingErr, 'bad joystick input');
 
-            assert.equal(err instanceof ExecutionError, true);
+            assert.equal(err instanceof restifyErrors.ExecutionError, true);
             assert.equal(err instanceof RestError, true);
             assert.equal(err instanceof HttpError, true);
             assert.equal(err instanceof WError, true);
@@ -480,6 +480,16 @@ describe('restify-errors node module.', function() {
             assert.equal(err.body.code, 'Error');
             assert.equal(err.body.message, 'bad joystick input');
             assert.equal(err.we_cause, underlyingErr);
+        });
+
+        it('should throw when creating a constructor that already exists', function() {
+            assert.throws(function() {
+                restifyErrors.makeConstructor('ExecutionError');
+            }, 'Constructor already exists!');
+
+            assert.throws(function() {
+                restifyErrors.makeConstructor('InternalServerError');
+            }, 'Constructor already exists!');
         });
 
         it('should create an error from an http status code', function() {
