@@ -222,14 +222,15 @@ For more information about building rich errors, check out
 ### Subclassing Errors
 
 You can also create your own Error subclasses by using the provided
-`makeConstructor()` method:
+`makeConstructor()` method. Making a new subclass will add the constructor to
+the existing exports object:
 
 ```js
-var ExecutionError = errors.makeConstructor('ExecutionError', {
+errors.makeConstructor('ExecutionError', {
     statusCode: 406,
     failureType: 'motion'
 });
-var myErr = new ExecutionError('bad joystick input!');
+var myErr = new errors.ExecutionError('bad joystick input!');
 
 console.log(myErr instanceof ExecutionError);
 // => true
@@ -300,13 +301,13 @@ prefer that over `options.message`.
 
 ### makeConstructor(name [, defaults])
 
-Creates a custom Error constructor.
+Creates a custom Error constructor, adds it to the existing exports object.
 
 * `name` {String} - the name of your Error
 * `defaults` {Object} - an object of default values that will added to the
 prototype.
 
-**Returns:** {Function} an Error constructor, inherits from RestError
+**Returns:** {void}
 
 ### makeErrFromCode(name [, args...])
 

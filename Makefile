@@ -1,7 +1,8 @@
 #
 # Directories
 #
-NODE_MODULES   := './node_modules'
+ROOT           := $(shell pwd)
+NODE_MODULES   := $(ROOT)/node_modules
 NODE_BIN       := $(NODE_MODULES)/.bin
 
 
@@ -22,11 +23,12 @@ NPM		    := npm
 #
 GIT_HOOK_SRC   = '../../tools/githooks/pre-push'
 GIT_HOOK_DEST  = '.git/hooks/pre-push'
-LIB_FILES  	   = './lib'
-TEST_FILES     = './test'
-COVERAGE_FILES = './coverage'
-LCOV           = './coverage/lcov.info'
-
+LIB_FILES  	   := $(ROOT)/lib
+TEST_FILES     := $(ROOT)/test
+COVERAGE_FILES := $(ROOT)/coverage
+LCOV           := $(ROOT)/coverage/lcov.info
+SRCS           := $(shell find $(LIB_FILES) $(TEST_FILES) -name '*.js' -type f \
+					-not \( -path './node_modules/*' -prune \))
 
 #
 # Targets
@@ -48,18 +50,18 @@ githooks:
 
 
 .PHONY: lint
-lint: node_modules
-	$(ESLINT) $(LIB_FILES) $(TEST_FILES)
+lint: node_modules $(ESLINT) $(SRCS)
+	$(ESLINT) $(SRCS)
 
 
 .PHONY: codestyle
-codestyle: node_modules
-	$(JSCS) $(LIB_FILES) $(TEST_FILES)
+codestyle: node_modules $(JSCS) $(SRCS)
+	$(JSCS) $(SRCS)
 
 
 .PHONY: codestyle-fix
-codestyle-fix: node_modules
-	$(JSCS) $(LIB_FILES) $(TEST_FILES) --fix
+codestyle-fix: node_modules $(JSCS) $(SRCS)
+	$(JSCS) $(SRCS) --fix
 
 
 .PHONY: prepush
@@ -77,7 +79,7 @@ coverage: node_modules clean-coverage
 
 
 .PHONY: report-coverage
-report: coverage
+report-coverage: coverage
 	@cat $(LCOV) | $(COVERALLS)
 
 
@@ -94,4 +96,4 @@ clean: clean-coverage
 #
 ## Debug -- print out a a variable via `make print-FOO`
 #
-#print-%  : ; @echo $* = $($*)
+print-%  : ; @echo $* = $($*)
