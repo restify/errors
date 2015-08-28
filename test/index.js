@@ -506,4 +506,65 @@ describe('restify-errors node module.', function() {
             assert.equal(err.body.message, 'the horror');
         });
     });
+
+    describe('restify integration', function() {
+
+        var server;
+        var client;
+
+        before(function(done) {
+            var restify = require('restify');
+            var restifyClients = require('restify-clients');
+
+            server = restify.createServer({
+                name: 'restifyErrors'
+            });
+            client = restifyClients.createJSONClient({
+                url: 'http://localhost:3000'
+            });
+            server.listen(3000, done);
+        });
+
+        it('should send HttpErrors with status codes', function(done) {
+            server.get('/1', function(req, res, next) {
+                res.send(new restifyErrors.NotFoundError('gone girl'));
+                next();
+            });
+
+            client.get('/1', function(err, req, res, data) {
+                assert.ok(err);
+                assert.equal(res.statusCode, 404);
+                assert.equal(data.message, 'gone girl');
+                done();
+            });
+        });
+
+        it('should send send RestErrors with status codes', function(done) {
+            server.get('/2', function(req, res, next) {
+                res.send(new restifyErrors.BadDigestError('indigestion'));
+                next();
+            });
+
+            client.get('/2', function(err, req, res, data) {
+                assert.ok(err);
+                assert.equal(res.statusCode, 400);
+                assert.equal(data.message, 'indigestion');
+                done();
+            });
+        });
+
+        it('should send send custom errors with status codes', function(done) {
+            server.get('/3', function(req, res, next) {
+                res.send(new restifyErrors.ExecutionError('bad joystick input!'));
+                next();
+            });
+
+            client.get('/3', function(err, req, res, data) {
+                assert.ok(err);
+                assert.equal(res.statusCode, 406);
+                assert.equal(data.message, 'bad joystick input!');
+                done();
+            });
+        });
+    });
 });

@@ -41,7 +41,9 @@
     "istanbul": "^0.3.15",
     "jscs": "^2.1.0",
     "mkdirp": "^0.5.1",
-    "mocha": "^2.2.5"
+    "mocha": "^2.2.5",
+    "restify": "^4.0.0",
+    "restify-clients": "^1.0.0"
   },
   "dependencies": {
     "assert-plus": "^0.1.5",
