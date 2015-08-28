@@ -539,7 +539,7 @@ describe('restify-errors node module.', function() {
             });
         });
 
-        it('should send send RestErrors with status codes', function(done) {
+        it('should send RestErrors with status codes', function(done) {
             server.get('/2', function(req, res, next) {
                 res.send(new restifyErrors.BadDigestError('indigestion'));
                 next();
@@ -553,7 +553,7 @@ describe('restify-errors node module.', function() {
             });
         });
 
-        it('should send send custom errors with status codes', function(done) {
+        it('should send custom errors with status codes', function(done) {
             server.get('/3', function(req, res, next) {
                 res.send(new restifyErrors.ExecutionError('bad joystick input!'));
                 next();
