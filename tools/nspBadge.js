@@ -5,18 +5,27 @@
 var fs = require('fs');
 var path = require('path');
 
+var README_PATH = path.join(__dirname, '../README.md');
 /* jscs:disable maximumLineLength */
-var SUCCESS_BADGE = "[![NSP Status](https://img.shields.io/badge/NSP%20status-vulnerabilities%20found-red.svg')](https://travis-ci.org/restify/errors)";
-var FAIL_BADGE = "https://img.shields.io/badge/NSP%20status-no vulnerabilities-green.svg')](https://travis-ci.org/restify/errors)";
+var FAIL_BADGE = 'vulnerabilities%20found-red';
+var SUCCESS_BADGE = 'no%20vulnerabilities-green';
+var NSP_LINE_ID = '[NSP Status]';
 /* jscs:enable maximumLineLength */
 
 process.stdin.on('data', function(exitCodeBuf) {
+
     var nspExitCode = parseInt(exitCodeBuf.toString(), 10);
 
-    var readmeStr = fs.readFileSync(path.join(__dirname, '../README.md'))
-                        .toString();
+    if (isNaN(nspExitCode)) {
+        nspExitCode = 0;
+    }
+
+    var readmeStr = fs.readFileSync(README_PATH).toString();
 
     var out = processLines(nspExitCode, readmeStr);
+
+    // now write it back out
+    fs.writeFileSync(README_PATH, out);
 });
 
 function processLines(exitCode, readmeStr) {
@@ -24,15 +33,18 @@ function processLines(exitCode, readmeStr) {
     var outLines = '';
 
     lines.forEach(function(line) {
-        if (line.indexOf('[NSP Status]') > -1) {
+        if (line.indexOf(NSP_LINE_ID) > -1) {
             if (exitCode === 0) {
-                outLines += SUCCESS_BADGE;
+                outLines += line.replace(FAIL_BADGE, SUCCESS_BADGE) + '\n';
             } else {
-                outLines += FAIL_BADGE;
+                outLines += line.replace(SUCCESS_BADGE, FAIL_BADGE) + '\n';
             }
         } else {
-            outLines += line;
+            outLines += line + '\n';
         }
     });
+
+    // chop off last newline
+    return outLines.slice(0, -1);
 }
 

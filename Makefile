@@ -61,7 +61,7 @@ lint: node_modules $(ESLINT) $(SRCS)
 .PHONY: nsp
 nsp: node_modules $(NSP)
 	$(NPM) shrinkwrap --dev
-	$(NSP) audit-shrinkwrap || echo 1 | $(NSP_BADGE)
+	($(NSP) audit-shrinkwrap || echo 1) | $(NSP_BADGE)
 	@rm $(SHRINKWRAP)
 
 
