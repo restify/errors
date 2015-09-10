@@ -1,6 +1,6 @@
 # restify-errors
 
-<!-- [![NPM Version](https://img.shields.io/npm/v/errors.svg)](https://npmjs.org/package/errors) -->
+[![NPM Version](https://img.shields.io/npm/v/restify-errors.svg)](https://npmjs.org/package/restify-errors)
 [![Build Status](https://travis-ci.org/restify/errors.svg?branch=master)](https://travis-ci.org/restify/errors)
 [![Coverage Status](https://coveralls.io/repos/restify/errors/badge.svg?branch=master)](https://coveralls.io/r/restify/errors?branch=master)
 [![Dependency Status](https://david-dm.org/restify/errors.svg)](https://david-dm.org/restify/errors)
