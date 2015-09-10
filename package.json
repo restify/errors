@@ -38,10 +38,11 @@
     "chai": "^3.2.0",
     "coveralls": "^2.11.4",
     "eslint": "^1.2.1",
-    "istanbul": "^0.3.18",
+    "istanbul": "^0.3.19",
     "jscs": "^2.1.1",
     "mkdirp": "^0.5.1",
     "mocha": "^2.2.5",
+    "nsp": "^1.1.0",
     "restify": "^4.0.0",
     "restify-clients": "^1.0.0"
   },

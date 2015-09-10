@@ -4,6 +4,7 @@
 ROOT           := $(shell pwd)
 NODE_MODULES   := $(ROOT)/node_modules
 NODE_BIN       := $(NODE_MODULES)/.bin
+TOOLS          := $(ROOT)/tools
 
 
 #
@@ -15,7 +16,9 @@ MOCHA       := $(NODE_BIN)/mocha
 _MOCHA      := $(NODE_BIN)/_mocha
 ISTANBUL    := $(NODE_BIN)/istanbul
 COVERALLS   := $(NODE_BIN)/coveralls
+NSP         := $(NODE_BIN)/nsp
 NPM		    := npm
+NSP_BADGE   := $(TOOLS)/nspBadge.js
 
 
 #
@@ -27,6 +30,7 @@ LIB_FILES  	   := $(ROOT)/lib
 TEST_FILES     := $(ROOT)/test
 COVERAGE_FILES := $(ROOT)/coverage
 LCOV           := $(ROOT)/coverage/lcov.info
+SHRINKWRAP     := $(ROOT)/npm-shrinkwrap.json
 SRCS           := $(shell find $(LIB_FILES) $(TEST_FILES) -name '*.js' -type f \
 					-not \( -path './node_modules/*' -prune \))
 
@@ -40,7 +44,6 @@ all: node_modules lint codestyle test clean-coverage
 
 node_modules: package.json
 	$(NPM) install
-	# must always touch node_modules, because npm doesn't update timestamp.
 	@touch $(NODE_MODULES)
 
 
@@ -54,6 +57,14 @@ lint: node_modules $(ESLINT) $(SRCS)
 	$(ESLINT) $(SRCS)
 
 
+# make nsp always pass - run this as separate travis task for "reporting"
+.PHONY: nsp
+nsp: node_modules $(NSP)
+	$(NPM) shrinkwrap --dev
+	($(NSP) audit-shrinkwrap || echo 1) | $(NSP_BADGE)
+	@rm $(SHRINKWRAP)
+
+
 .PHONY: codestyle
 codestyle: node_modules $(JSCS) $(SRCS)
 	$(JSCS) $(SRCS)
@@ -65,7 +76,7 @@ codestyle-fix: node_modules $(JSCS) $(SRCS)
 
 
 .PHONY: prepush
-prepush: node_modules lint codestyle test
+prepush: node_modules lint codestyle test nsp
 
 
 .PHONY: test
