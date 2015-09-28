@@ -15,8 +15,8 @@
     // alignment rules
     "maximumLineLength": {
         "value": 80,
-        "allowComments": true,
-        "allowUrlComments": true,
+        "allowComments": false,
+        "allowUrlComments": false,
         "allowRegex": true
     },
     "validateIndentation": 4,
@@ -38,6 +38,7 @@
     "disallowSpacesInFunction": {
         "beforeOpeningRoundBrace": true
     },
+    "disallowSpacesInsideParentheses": true,
     "disallowSpacesInCallExpression": true,
     "disallowTrailingComma": true,
     "disallowTrailingWhitespace": true,

@@ -6,7 +6,7 @@
 [![Dependency Status](https://david-dm.org/restify/errors.svg)](https://david-dm.org/restify/errors)
 [![devDependency Status](https://david-dm.org/restify/errors/dev-status.svg)](https://david-dm.org/restify/errors#info=devDependencies)
 [![bitHound Score](https://www.bithound.io/github/restify/errors/badges/score.svg)](https://www.bithound.io/github/restify/errors/master)
-[![NSP Status](https://img.shields.io/badge/NSP%20status-vulnerabilities%20found-red.svg)](https://travis-ci.org/restify/errors)
+[![NSP Status](https://img.shields.io/badge/NSP%20status-no%20vulnerabilities-green.svg)](https://travis-ci.org/restify/errors)
 
 > A collection of HTTP and REST Error constructors.
 
