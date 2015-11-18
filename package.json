@@ -47,7 +47,7 @@
     "restify-clients": "^1.0.0"
   },
   "dependencies": {
-    "assert-plus": "^0.1.5",
+    "assert-plus": "^0.2.0",
     "lodash": "^3.10.1",
     "verror": "^1.6.0"
   }
