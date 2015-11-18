@@ -35,19 +35,19 @@
     "test": "make test"
   },
   "devDependencies": {
-    "chai": "^3.2.0",
+    "chai": "^3.4.1",
     "coveralls": "^2.11.4",
-    "eslint": "^1.2.1",
+    "eslint": "^1.9.0",
     "istanbul": "^0.3.19",
-    "jscs": "^2.1.1",
+    "jscs": "^2.5.1",
     "mkdirp": "^0.5.1",
-    "mocha": "^2.2.5",
-    "nsp": "^1.1.0",
-    "restify": "^4.0.0",
-    "restify-clients": "^1.0.0"
+    "mocha": "^2.3.4",
+    "nsp": "^2.0.2",
+    "restify": "^4.0.3",
+    "restify-clients": "^1.1.1"
   },
   "dependencies": {
-    "assert-plus": "^0.1.5",
+    "assert-plus": "^0.2.0",
     "lodash": "^3.10.1",
     "verror": "^1.6.0"
   }

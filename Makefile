@@ -54,25 +54,25 @@ githooks:
 
 .PHONY: lint
 lint: node_modules $(ESLINT) $(SRCS)
-	$(ESLINT) $(SRCS)
+	@$(ESLINT) $(SRCS)
 
 
 # make nsp always pass - run this as separate travis task for "reporting"
 .PHONY: nsp
 nsp: node_modules $(NSP)
 	$(NPM) shrinkwrap --dev
-	($(NSP) audit-shrinkwrap || echo 1) | $(NSP_BADGE)
+	@($(NSP) check || echo 1) | $(NSP_BADGE)
 	@rm $(SHRINKWRAP)
 
 
 .PHONY: codestyle
 codestyle: node_modules $(JSCS) $(SRCS)
-	$(JSCS) $(SRCS)
+	@$(JSCS) $(SRCS)
 
 
 .PHONY: codestyle-fix
 codestyle-fix: node_modules $(JSCS) $(SRCS)
-	$(JSCS) $(SRCS) --fix
+	@$(JSCS) $(SRCS) --fix
 
 
 .PHONY: prepush
@@ -81,12 +81,12 @@ prepush: node_modules lint codestyle test nsp
 
 .PHONY: test
 test: node_modules
-	$(MOCHA) -R spec
+	@$(MOCHA) -R spec --full-trace
 
 
 .PHONY: coverage
 coverage: node_modules clean-coverage
-	$(ISTANBUL) cover $(_MOCHA) --report lcovonly -- -R spec
+	@$(ISTANBUL) cover $(_MOCHA) --report lcovonly -- -R spec
 
 
 .PHONY: report-coverage
