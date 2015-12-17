@@ -31,7 +31,8 @@ The module ships with the following HttpErrors:
 * 413 RequestEntityTooLargeError
 * 414 RequesturiTooLargeError
 * 415 UnsupportedMediaTypeError
-* 416 RequestedRangeNotSatisfiableError
+* 416 RangeNotSatisfiableError (For Node >= 4 & iojs >= 3)
+* 416 RequestedRangeNotSatisfiableError (For Node 0.x & iojs < 3)
 * 417 ExpectationFailedError
 * 418 ImATeapotError
 * 422 UnprocessableEntityError
