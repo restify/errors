@@ -17,6 +17,7 @@ process.stdin.on('data', function(exitCodeBuf) {
     var nspExitCode = parseInt(exitCodeBuf.toString(), 10);
 
     if (isNaN(nspExitCode)) {
+        console.warn(exitCodeBuf.toString()); // eslint-disable-line no-console
         nspExitCode = 0;
     }
 

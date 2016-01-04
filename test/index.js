@@ -30,12 +30,20 @@ describe('restify-errors node module.', function() {
             assert.equal(myErr instanceof HttpError, true);
             assert.equal(myErr instanceof WError, true);
             assert.equal(myErr instanceof Error, true);
+
+            assert.equal(myErr.code, 'Error');
+            assert.equal(myErr.toJSON(), JSON.stringify({
+                code: 'Error',
+                message: ''
+            }));
+            assert.equal(myErr.toString(), 'HttpError: ');
         });
 
         it('should create HttpError using options object', function() {
             var options = {
                 message: 'my http error',
-                statusCode: 799
+                statusCode: 799,
+                code: 'myhttp'
             };
             var myErr = new HttpError(options);
 
@@ -43,9 +51,10 @@ describe('restify-errors node module.', function() {
             assert.equal(myErr.name, 'HttpError');
             assert.equal(myErr.message, options.message);
             assert.equal(myErr.statusCode, options.statusCode);
+            assert.equal(myErr.code, 'myhttp');
             assert.isObject(myErr.body);
             assert.equal(myErr.body.message, options.message);
-            assert.equal(myErr.body.code, 'HttpError');
+            assert.equal(myErr.body.code, 'myhttp');
         });
 
         it('should create HttpError, and retain a prior cause', function() {
@@ -58,7 +67,7 @@ describe('restify-errors node module.', function() {
             assert.equal(myErr.message, 'new message');
             assert.isObject(myErr.body);
             assert.equal(myErr.body.message, 'new message');
-            assert.equal(myErr.body.code, 'HttpError');
+            assert.equal(myErr.body.code, 'Error');
 
             // create http error with prior cause and options
             var myErr2Msg = 'bazbar';
@@ -71,7 +80,7 @@ describe('restify-errors node module.', function() {
             assert.equal(myErr2.message, myErr2Msg);
             assert.isObject(myErr2.body);
             assert.equal(myErr2.body.message, myErr2Msg);
-            assert.equal(myErr2.body.code, 'HttpError');
+            assert.equal(myErr2.body.code, 'Error');
         });
 
         it('should create HttpError, args should fall through to WError', function() {
@@ -92,23 +101,33 @@ describe('restify-errors node module.', function() {
             assert.equal(myErr instanceof Error, true);
 
             // assert default status code
+            assert.equal(myErr.code, 'BadGateway');
             assert.equal(myErr.statusCode, 502);
             assert.equal(myErr.message, '');
+
+            // assert stringification
+            assert.equal(myErr.toJSON(), JSON.stringify({
+                code: 'BadGateway',
+                message: ''
+            }));
+            assert.equal(myErr.toString(), 'BadGatewayError: ');
         });
 
         it('should create BadGatewayError using options object', function() {
             var msg = 'my http error';
             var myErr = new httpErrors.BadGatewayError({
                 message: msg,
-                statusCode: 799  // can pass in any crazy status code
+                statusCode: 799,  // can pass in any crazy status code
+                code: 'myhttp'
             });
 
             assert.equal(myErr.name, 'BadGatewayError');
             assert.equal(myErr.message, msg);
             assert.equal(myErr.statusCode, 799);
+            assert.equal(myErr.code, 'myhttp');
             assert.isObject(myErr.body);
             assert.equal(myErr.body.message, msg);
-            assert.equal(myErr.body.code, 'BadGatewayError');
+            assert.equal(myErr.body.code, 'myhttp');
         });
 
         it('should create BadGatewayError, and retain a prior cause', function() {
@@ -120,7 +139,7 @@ describe('restify-errors node module.', function() {
             assert.equal(myErr.statusCode, 502);
             assert.isObject(myErr.body);
             assert.equal(myErr.body.message, '');
-            assert.equal(myErr.body.code, 'BadGatewayError');
+            assert.equal(myErr.body.code, 'BadGateway');
 
             var myErr2Msg = 'bazbar';
             var myErr2 = new httpErrors.BadGatewayError(priorErr, {
@@ -128,12 +147,12 @@ describe('restify-errors node module.', function() {
             });
 
             assert.equal(myErr.we_cause, priorErr);
-            assert.equal(myErr.name, 'BadGatewayError');
-            assert.equal(myErr.statusCode, 502);
+            assert.equal(myErr2.name, 'BadGatewayError');
+            assert.equal(myErr2.statusCode, 502);
             assert.equal(myErr2.message, myErr2Msg);
             assert.isObject(myErr2.body);
             assert.equal(myErr2.body.message, myErr2Msg);
-            assert.equal(myErr2.body.code, 'BadGatewayError');
+            assert.equal(myErr2.body.code, 'BadGateway');
         });
 
         it('should create BadGatewayError, args should fall through to WError', function() {
@@ -150,6 +169,15 @@ describe('restify-errors node module.', function() {
             assert.equal(myErr instanceof RestError, true);
             assert.equal(myErr instanceof WError, true);
             assert.equal(myErr instanceof Error, true);
+            assert.equal(myErr.code, 'Error');
+            assert.equal(myErr.restCode, 'Error');
+
+            // assert stringification
+            assert.equal(myErr.toJSON(), JSON.stringify({
+                code: 'Error',
+                message: ''
+            }));
+            assert.equal(myErr.toString(), 'RestError: ');
         });
 
         it('should create RestError, using options object', function() {
@@ -177,7 +205,6 @@ describe('restify-errors node module.', function() {
             assert.equal(myErr.we_cause, priorErr);
             assert.equal(myErr.name, 'RestError');
             assert.equal(myErr.restCode, 'Error');
-            assert.equal(myErr.restCode, 'Error');
             assert.equal(myErr.message, '');
             assert.isObject(myErr.body);
             assert.equal(myErr.body.message, '');
@@ -196,7 +223,7 @@ describe('restify-errors node module.', function() {
             assert.equal(myErr2.message, options.message);
             assert.isObject(myErr2.body);
             assert.equal(myErr2.body.message, options.message);
-            assert.equal(myErr2.body.code, options.restCode);
+            assert.equal(myErr2.body.code, 'yay');
         });
 
         it('should create RestError, args should fall through to WError', function() {
@@ -216,6 +243,15 @@ describe('restify-errors node module.', function() {
             assert.equal(myErr instanceof HttpError, true);
             assert.equal(myErr instanceof WError, true);
             assert.equal(myErr instanceof Error, true);
+            assert.equal(myErr.code, 'Error');
+            assert.equal(myErr.restCode, 'BadDigest');
+
+            // assert stringification
+            assert.equal(myErr.toJSON(), JSON.stringify({
+                code: 'BadDigest',
+                message: ''
+            }));
+            assert.equal(myErr.toString(), 'BadDigestError: ');
         });
 
         it('should create BadDigestError, using options object', function() {
@@ -233,7 +269,7 @@ describe('restify-errors node module.', function() {
             assert.equal(myErr.statusCode, options.statusCode);
             assert.isObject(myErr.body);
             assert.equal(myErr.body.message, options.message);
-            assert.equal(myErr.body.code, options.restCode);
+            assert.equal(myErr.body.code, 'yay');
         });
 
         it('should create BadDigestError, args should fall through to WError', function() {
@@ -259,7 +295,6 @@ describe('restify-errors node module.', function() {
             assert.isObject(myErr.body);
             assert.equal(myErr.body.message, 'missing file: "foobar"');
             assert.equal(myErr.body.code, 'Bad Digestion');
-
         });
     });
 
@@ -452,7 +487,15 @@ describe('restify-errors node module.', function() {
             assert.isAbove(_.size(restifyErrors), 30);
         });
 
-        it('should have restCode properties for all RestCode constructors', function() {
+        it('should have code properties for all HttpError constructors', function() {
+            _.forEach(httpErrors, function(HttpErr) {
+                var err = new HttpErr();
+                // strip off the last 5 chars ('Error') and do an assertion
+                assert.equal(err.code, HttpErr.displayName.slice(0, -5));
+            });
+        });
+
+        it('should have restCode properties for all RestError constructors', function() {
             _.forEach(restErrors, function(RestErr) {
                 var err = new RestErr();
                 // strip off the last 5 chars ('Error') and do an assertion
@@ -464,7 +507,8 @@ describe('restify-errors node module.', function() {
             var underlyingErr = new Error('underlying error!');
             restifyErrors.makeConstructor('ExecutionError', {
                 statusCode: 406,
-                failureType: 'motion'
+                failureType: 'motion',
+                code: 'moo'
             });
             var err = new restifyErrors.ExecutionError(underlyingErr, 'bad joystick input');
 
@@ -476,10 +520,51 @@ describe('restify-errors node module.', function() {
             assert.equal(err.message, 'bad joystick input');
             assert.equal(err.statusCode, 406);
             assert.equal(err.failureType, 'motion');
+            assert.equal(err.restCode, 'Execution');
+            assert.equal(err.code, 'moo');
             assert.isObject(err.body);
-            assert.equal(err.body.code, 'Error');
+            assert.equal(err.body.code, 'Execution');
             assert.equal(err.body.message, 'bad joystick input');
             assert.equal(err.we_cause, underlyingErr);
+
+            // assert stringification
+            assert.equal(err.toJSON(), JSON.stringify({
+                code: 'Execution',
+                message: 'bad joystick input'
+            }));
+            assert.equal(err.toString(), 'ExecutionError: bad joystick input');
+        });
+
+        it('should create custom error using makeConstructor (with lower case Error name)', function() {
+            var underlyingErr = new Error('underlying error!');
+            restifyErrors.makeConstructor('Executionerror', {
+                statusCode: 406,
+                failureType: 'motion',
+                code: 'moo'
+            });
+            var err = new restifyErrors.ExecutionError(underlyingErr, 'bad joystick input');
+
+            assert.equal(err instanceof restifyErrors.ExecutionError, true);
+            assert.equal(err instanceof RestError, true);
+            assert.equal(err instanceof HttpError, true);
+            assert.equal(err instanceof WError, true);
+            assert.equal(err instanceof Error, true);
+            assert.equal(err.message, 'bad joystick input');
+            assert.equal(err.statusCode, 406);
+            assert.equal(err.failureType, 'motion');
+            assert.equal(err.restCode, 'Execution');
+            assert.equal(err.code, 'moo');
+            assert.isObject(err.body);
+            assert.equal(err.body.code, 'Execution');
+            assert.equal(err.body.message, 'bad joystick input');
+            assert.equal(err.we_cause, underlyingErr);
+
+            // assert stringification
+            assert.equal(err.toJSON(), JSON.stringify({
+                code: 'Execution',
+                message: 'bad joystick input'
+            }));
+            assert.equal(err.toString(), 'ExecutionError: bad joystick input');
         });
 
         it('should throw when creating a constructor that already exists', function() {
@@ -502,8 +587,15 @@ describe('restify-errors node module.', function() {
             assert.equal(err.message, 'the horror');
             assert.equal(err.statusCode, 406);
             assert.isObject(err.body);
-            assert.equal(err.body.code, 'NotAcceptableError');
+            assert.equal(err.body.code, 'NotAcceptable');
             assert.equal(err.body.message, 'the horror');
+
+            // assert stringification
+            assert.equal(err.toJSON(), JSON.stringify({
+                code: 'NotAcceptable',
+                message: 'the horror'
+            }));
+            assert.equal(err.toString(), 'NotAcceptableError: the horror');
         });
     });
 

@@ -60,8 +60,8 @@ lint: node_modules $(ESLINT) $(SRCS)
 # make nsp always pass - run this as separate travis task for "reporting"
 .PHONY: nsp
 nsp: node_modules $(NSP)
-	$(NPM) shrinkwrap --dev
-	@($(NSP) check || echo 1) | $(NSP_BADGE)
+	@$(NPM) shrinkwrap --dev
+	@($(NSP) check) | $(NSP_BADGE)
 	@rm $(SHRINKWRAP)
 
 
