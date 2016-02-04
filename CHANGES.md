@@ -1,5 +1,14 @@
 # Change log
 
+## 4.0.0 (wip)
+
+- NEW: All Errors now have `toString()` and `toJSON()` methods
+- BREAKING: `code` and `restCode` properties were normalized across all
+  classes. `code` property now has a value of 'Error' for HttpError and
+  RestError. Any subclass will have the name of the error, minus 'Error',
+  i.e., GatewayTimeoutError has a code of GatewayTimeout. All code and
+  restCode properties are now overridable.
+
 ## 3.1.0
 - rev dependencies
 
