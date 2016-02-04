@@ -38,7 +38,7 @@
     "chai": "^3.4.1",
     "coveralls": "^2.11.4",
     "eslint": "^1.9.0",
-    "istanbul": "^0.3.19",
+    "istanbul": "^0.4.2",
     "jscs": "^2.5.1",
     "mkdirp": "^0.5.1",
     "mocha": "^2.3.4",
@@ -47,8 +47,8 @@
     "restify-clients": "^1.1.1"
   },
   "dependencies": {
-    "assert-plus": "^0.2.0",
-    "lodash": "^3.10.1",
+    "assert-plus": "^1.0.0",
+    "lodash": "^4.2.1",
     "verror": "^1.6.0"
   }
 }
