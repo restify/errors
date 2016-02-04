@@ -43,7 +43,11 @@ describe('restify-errors node module.', function() {
             var options = {
                 message: 'my http error',
                 statusCode: 799,
-                code: 'myhttp'
+                code: 'myhttp',
+                context: {
+                    foo: 'bar',
+                    baz: [1,2,3]
+                }
             };
             var myErr = new HttpError(options);
 
@@ -55,6 +59,8 @@ describe('restify-errors node module.', function() {
             assert.isObject(myErr.body);
             assert.equal(myErr.body.message, options.message);
             assert.equal(myErr.body.code, 'myhttp');
+            assert.equal(myErr.context.foo, 'bar');
+            assert.deepEqual(myErr.context.baz, [1,2,3]);
         });
 
         it('should create HttpError, and retain a prior cause', function() {
@@ -118,7 +124,11 @@ describe('restify-errors node module.', function() {
             var myErr = new httpErrors.BadGatewayError({
                 message: msg,
                 statusCode: 799,  // can pass in any crazy status code
-                code: 'myhttp'
+                code: 'myhttp',
+                context: {
+                    foo: 'bar',
+                    baz: [1,2,3]
+                }
             });
 
             assert.equal(myErr.name, 'BadGatewayError');
@@ -128,6 +138,8 @@ describe('restify-errors node module.', function() {
             assert.isObject(myErr.body);
             assert.equal(myErr.body.message, msg);
             assert.equal(myErr.body.code, 'myhttp');
+            assert.equal(myErr.context.foo, 'bar');
+            assert.deepEqual(myErr.context.baz, [1,2,3]);
         });
 
         it('should create BadGatewayError, and retain a prior cause', function() {
@@ -183,7 +195,11 @@ describe('restify-errors node module.', function() {
         it('should create RestError, using options object', function() {
             var options = {
                 message: 'my http error',
-                statusCode: 799
+                statusCode: 799,
+                context: {
+                    foo: 'bar',
+                    baz: [1,2,3]
+                }
             };
             var myErr = new RestError(options);
 
@@ -195,6 +211,8 @@ describe('restify-errors node module.', function() {
             assert.isObject(myErr.body);
             assert.equal(myErr.body.message, options.message);
             assert.equal(myErr.body.code, 'Error');
+            assert.equal(myErr.context.foo, 'bar');
+            assert.deepEqual(myErr.context.baz, [1,2,3]);
         });
 
         it('should create RestError, and retain a prior cause', function() {
@@ -258,7 +276,11 @@ describe('restify-errors node module.', function() {
             var options = {
                 message: 'my http error',
                 restCode: 'yay',
-                statusCode: 799
+                statusCode: 799,
+                context: {
+                    foo: 'bar',
+                    baz: [1,2,3]
+                }
             };
             var myErr = new restErrors.BadDigestError(options);
 
@@ -270,6 +292,8 @@ describe('restify-errors node module.', function() {
             assert.isObject(myErr.body);
             assert.equal(myErr.body.message, options.message);
             assert.equal(myErr.body.code, 'yay');
+            assert.equal(myErr.context.foo, 'bar');
+            assert.deepEqual(myErr.context.baz, [1,2,3]);
         });
 
         it('should create BadDigestError, args should fall through to WError', function() {
@@ -504,12 +528,15 @@ describe('restify-errors node module.', function() {
         });
 
         it('should create custom error using makeConstructor', function() {
-            var underlyingErr = new Error('underlying error!');
             restifyErrors.makeConstructor('ExecutionError', {
                 statusCode: 406,
                 failureType: 'motion',
                 code: 'moo'
             });
+        });
+
+        it('should create custom error instance', function() {
+            var underlyingErr = new Error('underlying error!');
             var err = new restifyErrors.ExecutionError(underlyingErr, 'bad joystick input');
 
             assert.equal(err instanceof restifyErrors.ExecutionError, true);
@@ -535,14 +562,17 @@ describe('restify-errors node module.', function() {
             assert.equal(err.toString(), 'ExecutionError: bad joystick input');
         });
 
-        it('should create custom error using makeConstructor (with lower case Error name)', function() {
+        it('should create custom error instance using options', function() {
+            var options = {
+                message: 'bad joystick input',
+                statusCode: 799,
+                context: {
+                    foo: 'bar',
+                    baz: [1,2,3]
+                }
+            };
             var underlyingErr = new Error('underlying error!');
-            restifyErrors.makeConstructor('Executionerror', {
-                statusCode: 406,
-                failureType: 'motion',
-                code: 'moo'
-            });
-            var err = new restifyErrors.ExecutionError(underlyingErr, 'bad joystick input');
+            var err = new restifyErrors.ExecutionError(underlyingErr, options);
 
             assert.equal(err instanceof restifyErrors.ExecutionError, true);
             assert.equal(err instanceof RestError, true);
@@ -550,7 +580,7 @@ describe('restify-errors node module.', function() {
             assert.equal(err instanceof WError, true);
             assert.equal(err instanceof Error, true);
             assert.equal(err.message, 'bad joystick input');
-            assert.equal(err.statusCode, 406);
+            assert.equal(err.statusCode, 799);
             assert.equal(err.failureType, 'motion');
             assert.equal(err.restCode, 'Execution');
             assert.equal(err.code, 'moo');
@@ -558,6 +588,8 @@ describe('restify-errors node module.', function() {
             assert.equal(err.body.code, 'Execution');
             assert.equal(err.body.message, 'bad joystick input');
             assert.equal(err.we_cause, underlyingErr);
+            assert.equal(err.context.foo, 'bar');
+            assert.deepEqual(err.context.baz, [1,2,3]);
 
             // assert stringification
             assert.equal(err.toJSON(), JSON.stringify({
@@ -565,6 +597,25 @@ describe('restify-errors node module.', function() {
                 message: 'bad joystick input'
             }));
             assert.equal(err.toString(), 'ExecutionError: bad joystick input');
+        });
+
+        it('should create custom error using makeConstructor (with lower case Error name)', function() {
+            var underlyingErr = new Error('underlying error!');
+            restifyErrors.makeConstructor('Executionerror', {
+                statusCode: 406,
+                failureType: 'motion',
+                code: 'moo'
+            });
+            var err = new restifyErrors.Executionerror(underlyingErr, 'bad joystick input');
+
+            assert.equal(err instanceof restifyErrors.Executionerror, true);
+
+            // assert stringification
+            assert.equal(err.toJSON(), JSON.stringify({
+                code: 'Execution',
+                message: 'bad joystick input'
+            }));
+            assert.equal(err.toString(), 'Executionerror: bad joystick input');
         });
 
         it('should throw when creating a constructor that already exists', function() {

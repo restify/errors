@@ -2,6 +2,8 @@
 
 ## 4.0.0 (wip)
 
+- NEW: Error constructor now takes `options.context`, which is a bucket of
+  random properties that are saved to the Error object
 - NEW: All Errors now have `toString()` and `toJSON()` methods
 - BREAKING: `code` and `restCode` properties were normalized across all
   classes. `code` property now has a value of 'Error' for HttpError and
