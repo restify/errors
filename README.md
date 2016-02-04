@@ -309,7 +309,8 @@ Creates a custom Error constructor, adds it to the existing exports object.
 
 * `name` {String} - the name of your Error
 * `defaults` {Object} - an object of default values that will added to the
-prototype.
+prototype. It is possible to override the default `toString()` and `toJSON()`
+methods.
 
 **Returns:** {void}
 

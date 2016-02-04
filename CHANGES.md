@@ -1,10 +1,11 @@
 # Change log
 
-## 4.0.0 (wip)
+## 4.0.0
 
 - NEW: Error constructor now takes `options.context`, which is a bucket of
-  random properties that are saved to the Error object
-- NEW: All Errors now have `toString()` and `toJSON()` methods
+  random properties that are saved to the Error object being created.
+- NEW: All Errors now have `toString()` and `toJSON()` methods. These are
+  overridable via `makeConstructor()`.
 - BREAKING: `code` and `restCode` properties were normalized across all
   classes. `code` property now has a value of 'Error' for HttpError and
   RestError. Any subclass will have the name of the error, minus 'Error',
