@@ -290,6 +290,8 @@ Or pass in an options object for more customization:
 by restify to render an error when it is directly passed to `res.send()`. By
 default, it is the name of your error constructor (e.g., the restCode for a
 BadDigestError is BadDigest).
+* `options.context` {Object} - object of contextual properties relevant to the
+creation of the error, i.e., the url of a failed http request
 
 In all signatures, you can optionally pass in an Error as the first argument,
 which will cause WError to use it as a prior cause:
