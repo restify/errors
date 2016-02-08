@@ -214,8 +214,29 @@ Caused by: Error: file lookup failed!
     at Function.Module.runMain (module.js:501:10)
     at startup (node.js:129:16)
     at node.js:814:3
-
 ```
+
+### Bunyan support
+
+Since errors created via restify-errors inherit from VError, you'll get out of
+the box support via bunyan's standard serializers. If you are using the
+`context` property, you can use the serializer shipped with restify-errors:
+
+```js
+
+var bunyan = require('bunyan');
+var restifyErrors = require('restify-errors');
+
+var log = bunyan.createLogger({
+    name: 'myLogger',
+    serializers: {
+        err: restifyErrors.bunyanSerializer
+    });
+```
+
+You can, of course, combine this with the standard set of serializers that
+bunyan ships with.
+
 
 For more information about building rich errors, check out
 [VError](https://github.com/davepacheco/node-verror).
