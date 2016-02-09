@@ -8,6 +8,7 @@ var http          = require('http');
 
 // userland
 var assert        = require('chai').assert;
+var bunyan        = require('bunyan');
 var _             = require('lodash');
 var WError        = require('verror').WError;
 
@@ -708,6 +709,67 @@ describe('restify-errors node module.', function() {
                 assert.equal(data.message, 'bad joystick input!');
                 done();
             });
+        });
+    });
+
+    describe('bunyan serializer', function() {
+
+        var logger;
+
+        before(function() {
+            logger = bunyan.createLogger({
+                name: 'unit-test',
+                serializers: {
+                    err: restifyErrors.bunyanSerializer
+                }
+            });
+        });
+
+        it('should serialize a standard Error', function(done) {
+
+            var err = new Error('boom');
+
+            assert.doesNotThrow(function() {
+                logger.error(err, 'standard error');
+            });
+
+            done();
+        });
+
+        it('should serialize a restify-error Error', function(done) {
+
+            var err = new Error('boom');
+            var myErr = new restifyErrors.InternalServerError(err, {
+                message: 'ISE',
+                context: {
+                    foo: 'bar',
+                    baz: 1
+                }
+            });
+
+            assert.doesNotThrow(function() {
+                logger.error(myErr, 'wrapped error');
+            });
+
+            done();
+        });
+
+        it('should ignore serializer', function(done) {
+
+            // pass an error object without stack
+            assert.doesNotThrow(function() {
+                logger.error({
+                    err: null
+                }, 'wrapped error');
+            });
+
+            assert.doesNotThrow(function() {
+                logger.error({
+                    err: {}
+                }, 'wrapped error');
+            });
+
+            done();
         });
     });
 });
