@@ -771,5 +771,25 @@ describe('restify-errors node module.', function() {
 
             done();
         });
+
+        it('should handle circular refs', function(done) {
+
+            var a = {};
+            var b = { foo: a };
+            a.foo = b;
+
+            var err = new RestError({
+                message: 'boom',
+                context: a
+            });
+
+            assert.doesNotThrow(function() {
+                logger.error({
+                    err: err
+                }, 'wrapped error');
+            });
+
+            done();
+        });
     });
 });
