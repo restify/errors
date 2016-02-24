@@ -37,7 +37,7 @@ The module ships with the following HttpErrors:
 * 418 ImATeapotError
 * 422 UnprocessableEntityError
 * 423 LockedError
-* 423 FailedDependencyError
+* 424 FailedDependencyError
 * 425 UnorderedCollectionError
 * 426 UpgradeRequiredError
 * 428 PreconditionRequiredError
