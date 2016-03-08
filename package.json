@@ -1,6 +1,6 @@
 {
   "name": "restify-errors",
-  "version": "4.2.0",
+  "version": "4.2.1",
   "main": "lib/index.js",
   "description": "Collection of Error objects shared across restify components.",
   "homepage": "http://www.restify.com",
