@@ -1,5 +1,21 @@
 # Change log
 
+## 4.2.1
+
+- FIX: Fix issue where `e.cause` was assumed to be a function, causing
+  serializer to fail.
+
+## 4.2.0
+
+- FIX: Use safe-json-stringify module to to do JSON serialization of objects
+  with circular objects.
+
+## 4.1.0
+
+- NEW: add bunyan serializer for handling the new `context` property on errors
+  created by restify-errors.
+
+
 ## 4.0.0
 
 - NEW: Error constructor now takes `options.context`, which is a bucket of
