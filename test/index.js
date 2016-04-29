@@ -37,7 +37,6 @@ describe('restify-errors node module.', function() {
                 code: 'Error',
                 message: ''
             }));
-            assert.equal(myErr.toString(), 'HttpError: ');
         });
 
         it('should create HttpError using options object', function() {
@@ -117,7 +116,6 @@ describe('restify-errors node module.', function() {
                 code: 'BadGateway',
                 message: ''
             }));
-            assert.equal(myErr.toString(), 'BadGatewayError: ');
         });
 
         it('should create BadGatewayError using options object', function() {
@@ -190,7 +188,6 @@ describe('restify-errors node module.', function() {
                 code: 'Error',
                 message: ''
             }));
-            assert.equal(myErr.toString(), 'RestError: ');
         });
 
         it('should create RestError, using options object', function() {
@@ -270,7 +267,6 @@ describe('restify-errors node module.', function() {
                 code: 'BadDigest',
                 message: ''
             }));
-            assert.equal(myErr.toString(), 'BadDigestError: ');
         });
 
         it('should create BadDigestError, using options object', function() {
@@ -560,7 +556,6 @@ describe('restify-errors node module.', function() {
                 code: 'Execution',
                 message: 'bad joystick input'
             }));
-            assert.equal(err.toString(), 'ExecutionError: bad joystick input');
         });
 
         it('should create custom error instance using options', function() {
@@ -597,7 +592,6 @@ describe('restify-errors node module.', function() {
                 code: 'Execution',
                 message: 'bad joystick input'
             }));
-            assert.equal(err.toString(), 'ExecutionError: bad joystick input');
         });
 
         it('should create custom error using makeConstructor (with lower case Error name)', function() {
@@ -616,7 +610,6 @@ describe('restify-errors node module.', function() {
                 code: 'Execution',
                 message: 'bad joystick input'
             }));
-            assert.equal(err.toString(), 'Executionerror: bad joystick input');
         });
 
         it('should throw when creating a constructor that already exists', function() {
@@ -647,7 +640,6 @@ describe('restify-errors node module.', function() {
                 code: 'NotAcceptable',
                 message: 'the horror'
             }));
-            assert.equal(err.toString(), 'NotAcceptableError: the horror');
         });
     });
 
