@@ -108,7 +108,6 @@
         // we use JSCS, set most to off because they're on by default.
         // turn the few on that aren't handled by JSCS today.
         "camelcase": [ 0 ],
-        "comma-dangle": [ 0 ],
         "key-spacing": [ 0 ],
         "no-lonely-if": [ 0 ],
         "no-multi-str": [ 0 ],
