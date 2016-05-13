@@ -1,5 +1,16 @@
 # Change log
 
+
+## 4.2.3
+
+- FIX: for errors with a cause chain, `toString()` now leverages VError to get
+  the full error message when serializing to JSON.
+
+## 4.2.2
+
+- FIX: remove `toString()` method that was overriding VError's existing
+  `toString()`. This was causing truncated error messages.
+
 ## 4.2.1
 
 - FIX: Fix issue where `e.cause` was assumed to be a function, causing
