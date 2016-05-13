@@ -33,7 +33,7 @@ describe('restify-errors node module.', function() {
             assert.equal(myErr instanceof Error, true);
 
             assert.equal(myErr.code, 'Error');
-            assert.equal(myErr.toJSON(), JSON.stringify({
+            assert.deepEqual(JSON.stringify(myErr), JSON.stringify({
                 code: 'Error',
                 message: ''
             }));
@@ -112,7 +112,7 @@ describe('restify-errors node module.', function() {
             assert.equal(myErr.message, '');
 
             // assert stringification
-            assert.equal(myErr.toJSON(), JSON.stringify({
+            assert.equal(JSON.stringify(myErr), JSON.stringify({
                 code: 'BadGateway',
                 message: ''
             }));
@@ -184,7 +184,7 @@ describe('restify-errors node module.', function() {
             assert.equal(myErr.restCode, 'Error');
 
             // assert stringification
-            assert.equal(myErr.toJSON(), JSON.stringify({
+            assert.equal(JSON.stringify(myErr), JSON.stringify({
                 code: 'Error',
                 message: ''
             }));
@@ -263,7 +263,7 @@ describe('restify-errors node module.', function() {
             assert.equal(myErr.restCode, 'BadDigest');
 
             // assert stringification
-            assert.equal(myErr.toJSON(), JSON.stringify({
+            assert.equal(JSON.stringify(myErr), JSON.stringify({
                 code: 'BadDigest',
                 message: ''
             }));
@@ -552,9 +552,10 @@ describe('restify-errors node module.', function() {
             assert.equal(err.we_cause, underlyingErr);
 
             // assert stringification
-            assert.equal(err.toJSON(), JSON.stringify({
+            assert.equal(JSON.stringify(err), JSON.stringify({
                 code: 'Execution',
-                message: 'bad joystick input'
+                message: 'bad joystick input; ' +
+                         'caused by Error: underlying error!'
             }));
         });
 
@@ -588,9 +589,10 @@ describe('restify-errors node module.', function() {
             assert.deepEqual(err.context.baz, [1,2,3]);
 
             // assert stringification
-            assert.equal(err.toJSON(), JSON.stringify({
+            assert.equal(JSON.stringify(err), JSON.stringify({
                 code: 'Execution',
-                message: 'bad joystick input'
+                message: 'bad joystick input; ' +
+                         'caused by Error: underlying error!'
             }));
         });
 
@@ -606,9 +608,10 @@ describe('restify-errors node module.', function() {
             assert.equal(err instanceof restifyErrors.Executionerror, true);
 
             // assert stringification
-            assert.equal(err.toJSON(), JSON.stringify({
+            assert.equal(JSON.stringify(err), JSON.stringify({
                 code: 'Execution',
-                message: 'bad joystick input'
+                message: 'bad joystick input; ' +
+                         'caused by Error: underlying error!'
             }));
         });
 
@@ -636,7 +639,7 @@ describe('restify-errors node module.', function() {
             assert.equal(err.body.message, 'the horror');
 
             // assert stringification
-            assert.equal(err.toJSON(), JSON.stringify({
+            assert.equal(JSON.stringify(err), JSON.stringify({
                 code: 'NotAcceptable',
                 message: 'the horror'
             }));
