@@ -68,7 +68,7 @@ describe('restify-errors node module.', function() {
             var priorErr = new Error('foobar');
             var myErr = new HttpError(priorErr, 'new message');
 
-            assert.equal(myErr.we_cause, priorErr);
+            assert.equal(myErr.cause(), priorErr);
             assert.equal(myErr.name, 'HttpError');
             assert.equal(myErr.message, 'new message');
             assert.isObject(myErr.body);
@@ -81,7 +81,7 @@ describe('restify-errors node module.', function() {
                 message: myErr2Msg
             });
 
-            assert.equal(myErr2.we_cause, priorErr);
+            assert.equal(myErr2.cause(), priorErr);
             assert.equal(myErr2.name, 'HttpError');
             assert.equal(myErr2.message, myErr2Msg);
             assert.isObject(myErr2.body);
@@ -145,7 +145,7 @@ describe('restify-errors node module.', function() {
             var priorErr = new Error('foobar');
             var myErr = new httpErrors.BadGatewayError(priorErr);
 
-            assert.equal(myErr.we_cause, priorErr);
+            assert.equal(myErr.cause(), priorErr);
             assert.equal(myErr.name, 'BadGatewayError');
             assert.equal(myErr.statusCode, 502);
             assert.isObject(myErr.body);
@@ -157,7 +157,7 @@ describe('restify-errors node module.', function() {
                 message: myErr2Msg
             });
 
-            assert.equal(myErr.we_cause, priorErr);
+            assert.equal(myErr.cause(), priorErr);
             assert.equal(myErr2.name, 'BadGatewayError');
             assert.equal(myErr2.statusCode, 502);
             assert.equal(myErr2.message, myErr2Msg);
@@ -218,7 +218,7 @@ describe('restify-errors node module.', function() {
             var priorErr = new Error('foobar');
             var myErr = new RestError(priorErr);
 
-            assert.equal(myErr.we_cause, priorErr);
+            assert.equal(myErr.cause(), priorErr);
             assert.equal(myErr.name, 'RestError');
             assert.equal(myErr.restCode, 'Error');
             assert.equal(myErr.message, '');
@@ -233,7 +233,7 @@ describe('restify-errors node module.', function() {
             };
             var myErr2 = new RestError(priorErr, options);
 
-            assert.equal(myErr2.we_cause, priorErr);
+            assert.equal(myErr2.cause(), priorErr);
             assert.equal(myErr2.name, 'RestError');
             assert.equal(myErr2.restCode, options.restCode);
             assert.equal(myErr2.message, options.message);
@@ -549,7 +549,7 @@ describe('restify-errors node module.', function() {
             assert.isObject(err.body);
             assert.equal(err.body.code, 'Execution');
             assert.equal(err.body.message, 'bad joystick input');
-            assert.equal(err.we_cause, underlyingErr);
+            assert.equal(err.cause(), underlyingErr);
 
             // assert stringification
             assert.equal(JSON.stringify(err), JSON.stringify({
@@ -584,7 +584,7 @@ describe('restify-errors node module.', function() {
             assert.isObject(err.body);
             assert.equal(err.body.code, 'Execution');
             assert.equal(err.body.message, 'bad joystick input');
-            assert.equal(err.we_cause, underlyingErr);
+            assert.equal(err.cause(), underlyingErr);
             assert.equal(err.context.foo, 'bar');
             assert.deepEqual(err.context.baz, [1,2,3]);
 
