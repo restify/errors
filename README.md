@@ -296,16 +296,22 @@ VError's MultiError is also supported:
 var underlyingErr = new Error('boom');
 var multiErr = new verror.MultiError([
     new Error('boom'),
-    new restifyErrors.InternalServerError(underlyingErr, 'wrapped')
+    new restifyErrors.InternalServerError(underlyingErr, {
+        message: 'wrapped',
+        context: {
+            foo: 'bar',
+            baz: 1
+        }
+    })
 ]);
 
 log.error(multiErr, 'oh noes');
 ```
 
 ```
-[2016-08-31T22:31:39.939Z] ERROR: logger/52560 on laptop: oh noes
+[2016-08-31T22:48:43.244Z] ERROR: logger/55311 on laptop: oh noes
     MultiError 1 of 2: Error: boom
-        at Object.<anonymous> (/restify/test.js:17:5)
+        at Object.<anonymous> (/restify/test.js:16:5)
         at Module._compile (module.js:409:26)
         at Object.Module._extensions..js (module.js:416:10)
         at Module.load (module.js:343:32)
@@ -313,8 +319,8 @@ log.error(multiErr, 'oh noes');
         at Function.Module.runMain (module.js:441:10)
         at startup (node.js:139:18)
         at node.js:974:3
-    MultiError 2 of 2: InternalServerError: wrapped
-        at Object.<anonymous> (/restify/test.js:18:5)
+    MultiError 2 of 2: InternalServerError: wrapped (foo="bar", baz=1)
+        at Object.<anonymous> (/restify/test.js:17:5)
         at Module._compile (module.js:409:26)
         at Object.Module._extensions..js (module.js:416:10)
         at Module.load (module.js:343:32)
