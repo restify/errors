@@ -10,7 +10,8 @@ var http          = require('http');
 var assert        = require('chai').assert;
 var bunyan        = require('bunyan');
 var _             = require('lodash');
-var WError        = require('verror').WError;
+var VError        = require('verror');
+var WError        = VError.WError;
 
 // internal
 var helpers       = require('../lib/helpers');
@@ -785,6 +786,46 @@ describe('restify-errors node module.', function() {
             });
 
             done();
+        });
+
+        it('should serialize a VError with info', function() {
+
+            var err = new VError({
+                name: 'VErrorInfo',
+                info: {
+                    foo: 'qux',
+                    baz: 2
+                }
+            }, 'this is a verror with info');
+
+            assert.doesNotThrow(function() {
+                logger.error(err);
+            });
+        });
+
+        it('should serialize a MultiError', function() {
+
+            var err1 = new Error('boom');
+            var err2 = new restifyErrors.InternalServerError(err1, {
+                message: 'ISE',
+                context: {
+                    foo: 'bar',
+                    baz: 1
+                }
+            });
+            var err3 = new VError({
+                name: 'VErrorInfo',
+                cause: err1,
+                info: {
+                    foo: 'qux',
+                    baz: 2
+                }
+            }, 'this is a verror with info');
+            var multiError = new VError.MultiError([ err1, err2, err3 ]);
+
+            assert.doesNotThrow(function() {
+                logger.error(multiError, 'MultiError');
+            });
         });
     });
 });

@@ -223,7 +223,6 @@ the box support via bunyan's standard serializers. If you are using the
 `context` property, you can use the serializer shipped with restify-errors:
 
 ```js
-
 var bunyan = require('bunyan');
 var restifyErrors = require('restify-errors');
 
@@ -231,12 +230,114 @@ var log = bunyan.createLogger({
     name: 'myLogger',
     serializers: {
         err: restifyErrors.bunyanSerializer
-    });
+    }
+});
+
+var err = new restifyErrors.InternalServerError({
+    message: 'cannot service this request!',
+    context: {
+        foo: 'bar',
+        bar: 1
+    }
+});
+
+log.error(err, 'oh noes');
+```
+
+```sh
+[2016-08-31T22:27:13.117Z] ERROR: log/51633 on laptop: oh noes (err.code=InternalServer)
+    InternalServerError: cannot service this request! (foo="bar", bar=1)
+        at Object.<anonymous> (/restify/test.js:11:11)
+        at Module._compile (module.js:409:26)
+        at Object.Module._extensions..js (module.js:416:10)
+        at Module.load (module.js:343:32)
+        at Function.Module._load (module.js:300:12)
+        at Function.Module.runMain (module.js:441:10)
+        at startup (node.js:139:18)
+        at node.js:974:3
 ```
 
 You can, of course, combine this with the standard set of serializers that
 bunyan ships with.
 
+
+#### VError support
+
+This serializer also comes with support for VError's new `info` property:
+
+```js
+var err = new VError({
+    name: 'BoomError',
+    info: {
+        foo: 'bar',
+        baz: 1
+    }
+}, 'something bad happened!');
+
+log.error(err, 'oh noes');
+```
+
+```sh
+[2016-08-31T22:21:35.900Z] ERROR: log/50874 on laptop: oh noes
+    BoomError: something bad happened! (foo="bar", baz=1)
+        at Object.<anonymous> (/restify/test.js:11:11)
+        at Module._compile (module.js:409:26)
+        at Object.Module._extensions..js (module.js:416:10)
+        at Module.load (module.js:343:32)
+        at Function.Module._load (module.js:300:12)
+        at Function.Module.runMain (module.js:441:10)
+        at startup (node.js:139:18)
+        at node.js:974:3
+```
+
+VError's MultiError is also supported:
+
+```js
+var underlyingErr = new Error('boom');
+var multiErr = new verror.MultiError([
+    new Error('boom'),
+    new restifyErrors.InternalServerError(underlyingErr, {
+        message: 'wrapped',
+        context: {
+            foo: 'bar',
+            baz: 1
+        }
+    })
+]);
+
+log.error(multiErr, 'oh noes');
+```
+
+```
+[2016-08-31T22:48:43.244Z] ERROR: logger/55311 on laptop: oh noes
+    MultiError 1 of 2: Error: boom
+        at Object.<anonymous> (/restify/test.js:16:5)
+        at Module._compile (module.js:409:26)
+        at Object.Module._extensions..js (module.js:416:10)
+        at Module.load (module.js:343:32)
+        at Function.Module._load (module.js:300:12)
+        at Function.Module.runMain (module.js:441:10)
+        at startup (node.js:139:18)
+        at node.js:974:3
+    MultiError 2 of 2: InternalServerError: wrapped (foo="bar", baz=1)
+        at Object.<anonymous> (/restify/test.js:17:5)
+        at Module._compile (module.js:409:26)
+        at Object.Module._extensions..js (module.js:416:10)
+        at Module.load (module.js:343:32)
+        at Function.Module._load (module.js:300:12)
+        at Function.Module.runMain (module.js:441:10)
+        at startup (node.js:139:18)
+        at node.js:974:3
+    Caused by: Error: boom
+        at Object.<anonymous> (/restify/test.js:14:21)
+        at Module._compile (module.js:409:26)
+        at Object.Module._extensions..js (module.js:416:10)
+        at Module.load (module.js:343:32)
+        at Function.Module._load (module.js:300:12)
+        at Function.Module.runMain (module.js:441:10)
+        at startup (node.js:139:18)
+        at node.js:974:3
+```
 
 For more information about building rich errors, check out
 [VError](https://github.com/davepacheco/node-verror).
