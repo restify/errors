@@ -1,5 +1,9 @@
 # Change log
 
+## 4.3.0
+
+- NEW: The bunyan serializer now handles regular VError objects using the new
+  `info` property. It also supports VError's MultiError.
 
 ## 4.2.3
 
