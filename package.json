@@ -42,7 +42,7 @@
     "istanbul": "^0.4.2",
     "jscs": "^2.11.0",
     "mkdirp": "^0.5.1",
-    "mocha": "^2.3.4",
+    "mocha": "^3.4.0",
     "nsp": "^2.2.0",
     "restify": "^4.0.3",
     "restify-clients": "^1.1.1"
