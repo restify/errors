@@ -529,7 +529,8 @@ describe('restify-errors node module.', function() {
             restifyErrors.makeConstructor('ExecutionError', {
                 statusCode: 406,
                 failureType: 'motion',
-                code: 'moo'
+                code: 'moo',
+                message: 'Default Execution Error'
             });
         });
 
@@ -624,6 +625,25 @@ describe('restify-errors node module.', function() {
             assert.throws(function() {
                 restifyErrors.makeConstructor('InternalServerError');
             }, 'Constructor already exists!');
+        });
+
+        it('should have message property fallback to custom error options', function() {
+            var err = new restifyErrors.ExecutionError('printf-style %s', 'error');
+            assert.equal(err.message, 'printf-style error');
+
+            err = new restifyErrors.ExecutionError({ message: 'options.message' });
+            assert.equal(err.message, 'options.message');
+
+            err = new restifyErrors.ExecutionError({ message: 'options.message' }, 'printf-style %s', 'error');
+            assert.equal(err.message, 'printf-style error');
+
+            err = new restifyErrors.ExecutionError();
+            assert.equal(err.message, 'Default Execution Error');
+
+            // assert fallback to empty string if no message provided
+            restifyErrors.makeConstructor('NoDefaultMessageError');
+            err = new restifyErrors.NoDefaultMessageError();
+            assert.equal(err.message, '');
         });
 
         it('should create an error from an http status code', function() {
