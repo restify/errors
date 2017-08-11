@@ -554,11 +554,13 @@ describe('restify-errors node module.', function() {
             assert.equal(err.cause(), underlyingErr);
 
             // assert stringification
-            assert.equal(JSON.stringify(err), JSON.stringify({
+            var expectedJSON = {
                 code: 'Execution',
                 message: 'bad joystick input; ' +
                          'caused by Error: underlying error!'
-            }));
+            };
+            assert.equal(JSON.stringify(err), JSON.stringify(expectedJSON));
+            assert.equal(err.toString(), err.name + ': ' + expectedJSON.message);
         });
 
         it('should create custom error instance using options', function() {
@@ -591,11 +593,13 @@ describe('restify-errors node module.', function() {
             assert.deepEqual(err.context.baz, [1,2,3]);
 
             // assert stringification
-            assert.equal(JSON.stringify(err), JSON.stringify({
+            var expectedJSON = {
                 code: 'Execution',
                 message: 'bad joystick input; ' +
                          'caused by Error: underlying error!'
-            }));
+            };
+            assert.equal(JSON.stringify(err), JSON.stringify(expectedJSON));
+            assert.equal(err.toString(), err.name + ': ' + expectedJSON.message);
         });
 
         it('should create custom error using makeConstructor (with lower case Error name)', function() {
@@ -610,11 +614,13 @@ describe('restify-errors node module.', function() {
             assert.equal(err instanceof restifyErrors.Executionerror, true);
 
             // assert stringification
-            assert.equal(JSON.stringify(err), JSON.stringify({
+            var expectedJSON = {
                 code: 'Execution',
                 message: 'bad joystick input; ' +
                          'caused by Error: underlying error!'
-            }));
+            };
+            assert.equal(JSON.stringify(err), JSON.stringify(expectedJSON));
+            assert.equal(err.toString(), err.name + ': ' + expectedJSON.message);
         });
 
         it('should throw when creating a constructor that already exists', function() {
