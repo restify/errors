@@ -336,11 +336,9 @@ describe('restify-errors node module.', function() {
                 statusCode: 101,
                 message: 'hi'
             };
-            var parsed = parse(new Error('foobar'), options);
+            var parsed = parse(err, options);
 
-            assert.deepEqual(parsed.args.length, 2);
-            assert.deepEqual(parsed.args[0].message, err.message);
-            assert.deepEqual(parsed.args[1], options);
+            assert.deepEqual(parsed.args, [ err, options ]);
             assert.deepEqual(parsed.options, options);
         });
 
@@ -380,10 +378,9 @@ describe('restify-errors node module.', function() {
                 statusCode: 101,
                 message: 'hi'
             };
-            var parsed = parseWErrorArgs(new Error('foobar'), options);
+            var parsed = parseWErrorArgs(err, options);
 
-            assert.deepEqual(parsed.args.length, 1);
-            assert.deepEqual(parsed.args[0].message, err.message);
+            assert.deepEqual(parsed.args, [ err ]);
             assert.deepEqual(parsed.options, options);
         });
 
