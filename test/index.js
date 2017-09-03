@@ -489,7 +489,7 @@ describe('restify-errors node module.', function() {
             // no good way to verify we got all the constructors, so it's hard
             // coded for now.
             // 16 built-in RestError subclasses
-            assert.equal(_.size(restErrors), 16);
+            assert.equal(_.size(restErrors), 15);
 
             // ensure each one has a displayName that ends in 'Error'
             // then try to new up one of each.
