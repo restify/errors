@@ -82,6 +82,8 @@ with an options object.
 
 Install the module with: `npm install restify-errors`
 
+For TypeScript type definitions: `npm install @types/restify-errors`
+
 ## Usage
 
 
