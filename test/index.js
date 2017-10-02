@@ -596,7 +596,11 @@ describe('restify-errors node module.', function() {
             var expectedJSON = {
                 code: 'Execution',
                 message: 'bad joystick input; ' +
-                         'caused by Error: underlying error!'
+                         'caused by Error: underlying error!',
+                context: {
+                    foo: 'bar',
+                    baz: [1,2,3]
+                }
             };
             assert.equal(JSON.stringify(err), JSON.stringify(expectedJSON));
             assert.equal(err.toString(), err.name + ': ' + expectedJSON.message);
