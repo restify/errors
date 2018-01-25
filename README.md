@@ -438,7 +438,7 @@ methods.
 
 **Returns:** {void}
 
-### makeErrFromCode(name [, args...])
+### makeErrFromCode(statusCode [, args...])
 
 Create an Error object using an http status code. This uses `http` module's
 `STATUS_CODES` to do the status code lookup. Thus, this convenience method
