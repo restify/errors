@@ -758,6 +758,20 @@ describe('restify-errors node module.', function() {
             done();
         });
 
+        it('should serialize a fake Error', function(done) {
+
+            var err = {
+                name: 'Error',
+                message: 'boom'
+            }
+
+            assert.doesNotThrow(function() {
+                restifyErrors.bunyanSerializer(err)
+            });
+
+            done();
+        });
+
         it('should serialize a restify-error Error', function(done) {
 
             var err = new Error('boom');
