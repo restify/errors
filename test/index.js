@@ -114,7 +114,6 @@ describe('restify-errors node module.', function() {
 
             assert.deepEqual(verror.info(myErr), info);
             assert.deepEqual(restifyErrors.info(myErr), info);
-            assert.deepEqual(myErr.info(), info);
             assert.deepEqual(myErr.context, info);
         });
 

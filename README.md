@@ -92,6 +92,10 @@ This module is now a thin wrapper over the
 constructor exposed by this module inherits from VError, which means the
 constructor signatures are now also identical to VError.
 
+All VError static methods are also re-exported on the restify-errors export
+object. For all intents and purposes, you should treat this library as an
+extension of VError, with a list of built in constructors and sugar functions.
+
 ### Context/Info object
 In 5.x, the `.context` property was used to store and capture context about the
 scenario causing the error. This concept is still supported, but now uses
@@ -101,8 +105,24 @@ you have to now is pass `info` instead of `context` when creating an Error.
 For migration purposes, accessing the info object via `.context` will be
 supported through 6.x, and the serializer will also continue to support it.
 Both may be deprecated in future versions. To access the info object, you can
-either call `info()` on the Error object directly, or use the VError static
-methods.
+use the VError static method `.info()`, which is re-exported on the
+restify-errors exports:
+
+```js
+var errors = require('restify-errors');
+var verror = require('verror');
+
+var err = new errors.InternalServerError({
+    info: {
+        foo: 'bar'
+    }
+});
+errors.info(err);  // => { foo: 'bar' }
+verror.info(err);  // => { foo: 'bar' }
+```
+
+Note that using verror directly also works, since all Error objects created by
+this library inherit from VError.
 
 ### Custom constructors
 
