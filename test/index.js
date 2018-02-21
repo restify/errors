@@ -536,7 +536,7 @@ describe('restify-errors node module.', function() {
 
         it('should create custom error instance', function() {
             var underlyingErr = new Error('underlying error!');
-            var err = new restifyErrors.ExecutionError(underlyingErr, 'bad joystick input');
+            var err = new restifyErrors.ExecutionError(underlyingErr, {message: 'bad joystick input', context: {key: 'val'}});
 
             assert.equal(err instanceof restifyErrors.ExecutionError, true);
             assert.equal(err instanceof RestError, true);
@@ -557,7 +557,8 @@ describe('restify-errors node module.', function() {
             var expectedJSON = {
                 code: 'Execution',
                 message: 'bad joystick input; ' +
-                         'caused by Error: underlying error!'
+                         'caused by Error: underlying error!',
+                context: {key: 'val'}
             };
             assert.equal(JSON.stringify(err), JSON.stringify(expectedJSON));
             assert.equal(err.toString(), err.name + ': ' + expectedJSON.message);
@@ -596,7 +597,8 @@ describe('restify-errors node module.', function() {
             var expectedJSON = {
                 code: 'Execution',
                 message: 'bad joystick input; ' +
-                         'caused by Error: underlying error!'
+                         'caused by Error: underlying error!',
+                context: {foo: 'bar', baz: [1,2,3]}
             };
             assert.equal(JSON.stringify(err), JSON.stringify(expectedJSON));
             assert.equal(err.toString(), err.name + ': ' + expectedJSON.message);
