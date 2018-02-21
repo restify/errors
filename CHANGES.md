@@ -1,5 +1,15 @@
 # Change log
 
+## 6.0.0
+
+- BREAKING: All Error constructors now mirror VError constructor APIs. Re-export
+  all VError static methods on restify-errors exports.
+
+## 5.0.0
+
+- BREAKING: (arguably a fix) Custom Error constructors now return the custom
+  error name when serialized via `toJSON()` or `toString()`
+
 ## 4.3.0
 
 - NEW: The bunyan serializer now handles regular VError objects using the new
