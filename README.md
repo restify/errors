@@ -6,12 +6,11 @@
 [![Dependency Status](https://david-dm.org/restify/errors.svg)](https://david-dm.org/restify/errors)
 [![devDependency Status](https://david-dm.org/restify/errors/dev-status.svg)](https://david-dm.org/restify/errors#info=devDependencies)
 [![bitHound Score](https://www.bithound.io/github/restify/errors/badges/score.svg)](https://www.bithound.io/github/restify/errors/master)
-[![NSP Status](https://img.shields.io/badge/NSP%20status-no%20vulnerabilities-green.svg)](https://travis-ci.org/restify/errors)
 
 > A collection of HTTP and REST Error constructors.
 
-The constructors can be used to new up Error objects with default status codes
-set.
+This module ships with a set of constructors that can be used to new up Error
+objects with default status codes.
 
 The module ships with the following HttpErrors:
 
@@ -86,6 +85,56 @@ For TypeScript type definitions: `npm install @types/restify-errors`
 
 ## Usage
 
+### Migration from 5.x to 6.x
+
+This module is now a thin wrapper over the
+[VError](https://github.com/davepacheco/node-verror) module. Every Error
+constructor exposed by this module inherits from VError, which means the
+constructor signatures are now also identical to VError.
+
+All VError static methods are also re-exported on the restify-errors export
+object. For all intents and purposes, you should treat this library as an
+extension of VError, with a list of built in constructors and sugar functions.
+
+### Context/Info object
+In 5.x, the `.context` property was used to store and capture context about the
+scenario causing the error. This concept is still supported, but now uses
+VError's info object to achieve the same thing. As it uses the VError APIs, all
+you have to now is pass `info` instead of `context` when creating an Error.
+
+For migration purposes, accessing the info object via `.context` will be
+supported through 6.x, and the serializer will also continue to support it.
+Both may be deprecated in future versions. To access the info object, you can
+use the VError static method `.info()`, which is re-exported on the
+restify-errors exports:
+
+```js
+var errors = require('restify-errors');
+var verror = require('verror');
+
+var err = new errors.InternalServerError({
+    info: {
+        foo: 'bar'
+    }
+});
+errors.info(err);  // => { foo: 'bar' }
+verror.info(err);  // => { foo: 'bar' }
+```
+
+Note that using verror directly also works, since all Error objects created by
+this library inherit from VError.
+
+### Custom constructors
+
+In 5.x, using the `makeConstructor` class would add the constructor itself to
+restify-error's module.exports object. This was problematic in complex
+applications, where custom Error constructors could be shared across multiple
+modules in multiple contexts.
+
+As a result, in 6.x, custom constructors are no longer stored on the
+module.exports object, and it is the user's responsibility to retain a
+reference to those custom constructors.
+
 
 ### Creating Errors
 
@@ -122,11 +171,28 @@ function redirectIfErr(req, res, next) {
 }
 ```
 
-### Rendering Errors
+You can also check against the `.code` or `.name` properties in case there are
+multiple copies of restify-error in your application process:
 
-All Error objects in this module are created with a `body` property. restify
-supports 'rendering' Errors as a response using this property. You can pass
-Errors to `res.send` and the error will be rendered out as JSON:
+```js
+function redirectIfErr(req, res, next) {
+    var err = req.data.error;
+    if (err) {
+        if (err.name === 'InternalServerError' ||
+        err.code === 'InternalServer') {
+            next(err);
+        } else if (err instanceof errors.NotFoundError) {
+            res.redirect('/NotFound', next);
+        }
+    }
+}
+```
+
+### Serializing Errors
+
+All Error objects in this module ship with both a `toString()` and `toJSON()`
+methods. Restify uses these methods to "render" errors when they are passed to
+`res.send()`:
 
 ```js
 function render(req, res, next) {
@@ -139,8 +205,10 @@ function render(req, res, next) {
 //     code: 'InternalServerError',
 //     message: ''
 // }
-
 ```
+
+You can override either of these methods to customize the serialization of an
+error.
 
 ### Customizing Errors
 
@@ -150,9 +218,8 @@ pass an options object to the constructor:
 ```js
 function render(req, res, next) {
     var myErr = new errors.InvalidVersionError({
-        statusCode: 409,
-        message: 'Version not supported with current query params'
-    });
+        statusCode: 409
+    }, 'Version not supported with current query params');
 
     res.send(myErr);
     return next();
@@ -165,7 +232,6 @@ function render(req, res, next) {
 //     code: 'InvalidVersionError',
 //     message: 'Version not supported with current query params'
 // }
-
 ```
 
 ### Passing in prior errors (causes)
@@ -222,7 +288,7 @@ Caused by: Error: file lookup failed!
 
 Since errors created via restify-errors inherit from VError, you'll get out of
 the box support via bunyan's standard serializers. If you are using the
-`context` property, you can use the serializer shipped with restify-errors:
+`info` property, you can use the serializer shipped with restify-errors:
 
 ```js
 var bunyan = require('bunyan');
@@ -236,12 +302,11 @@ var log = bunyan.createLogger({
 });
 
 var err = new restifyErrors.InternalServerError({
-    message: 'cannot service this request!',
-    context: {
+    info: {
         foo: 'bar',
         bar: 1
     }
-});
+}, 'cannot service this request');
 
 log.error(err, 'oh noes');
 ```
@@ -260,51 +325,19 @@ log.error(err, 'oh noes');
 ```
 
 You can, of course, combine this with the standard set of serializers that
-bunyan ships with.
-
-
-#### VError support
-
-This serializer also comes with support for VError's new `info` property:
-
-```js
-var err = new VError({
-    name: 'BoomError',
-    info: {
-        foo: 'bar',
-        baz: 1
-    }
-}, 'something bad happened!');
-
-log.error(err, 'oh noes');
-```
-
-```sh
-[2016-08-31T22:21:35.900Z] ERROR: log/50874 on laptop: oh noes
-    BoomError: something bad happened! (foo="bar", baz=1)
-        at Object.<anonymous> (/restify/test.js:11:11)
-        at Module._compile (module.js:409:26)
-        at Object.Module._extensions..js (module.js:416:10)
-        at Module.load (module.js:343:32)
-        at Function.Module._load (module.js:300:12)
-        at Function.Module.runMain (module.js:441:10)
-        at startup (node.js:139:18)
-        at node.js:974:3
-```
-
-VError's MultiError is also supported:
+bunyan ships with. VError's MultiError is also supported:
 
 ```js
 var underlyingErr = new Error('boom');
 var multiErr = new verror.MultiError([
     new Error('boom'),
-    new restifyErrors.InternalServerError(underlyingErr, {
-        message: 'wrapped',
-        context: {
+    new restifyErrors.InternalServerError({
+        cause: underlyingErr,
+        info: {
             foo: 'bar',
             baz: 1
         }
-    })
+    }, 'wrapped')
 ]);
 
 log.error(multiErr, 'oh noes');
@@ -348,13 +381,13 @@ For more information about building rich errors, check out
 ### Subclassing Errors
 
 You can also create your own Error subclasses by using the provided
-`makeConstructor()` method. Making a new subclass will add the constructor to
-the existing exports object:
+`makeConstructor()` method.
 
 ```js
 errors.makeConstructor('ExecutionError', {
     statusCode: 406,
-    failureType: 'motion'
+    failureType: 'motion',
+    message: 'my default message'
 });
 var myErr = new errors.ExecutionError('bad joystick input!');
 
@@ -383,49 +416,26 @@ ExecutionError: bad joystick input!
     at node.js:814:3
 ```
 
-Custom errors are subclassed from RestError, so you get all the built-in
-goodness of HttpError/RestError. The constructor returned to you accepts
-all the same signatures accepted by HttpError/RestError.
 
 ## API
 
-All error constructors are variadic and accept the following signatures:
+All Error constructors are variadic and accept the following signatures, which
+are identical to the
+[VError and WError](https://github.com/davepacheoco/node-verror) signatures.
 
-### new Error(message)
-### new Error(printf, args...)
-### new Error(options [, printf, args...])
-### new Error(priorErr, message])
-### new Error(priorErr [, printf, args...])
-### new Error(priorErr, options [, printf, args...])
+### new Error(sprintf_args...)
+### new Error(priorErr [, sprintf_args...])
+### new Error(options [, sprinf_args...])
 
-All [VError and WError](https://github.com/davepacheoco/node-verror) signatures
-are also supported, including
-[extsprintf](https://github.com/davepacheco/node-extsprintf).
+restify-errors adds additional options for the final signature:
 
-You can pass in a message like a regular error:
-
-* `message` {String} - an error message
-
-Or pass in an options object for more customization:
-
-* `options.message` {String} - an error message string
-* `options.statusCode` {Number} - an http status code
 * `options.restCode` {Number} - a description code for your Error. This is used
 by restify to render an error when it is directly passed to `res.send()`. By
 default, it is the name of your error constructor (e.g., the restCode for a
 BadDigestError is BadDigest).
-* `options.context` {Object} - object of contextual properties relevant to the
-creation of the error, i.e., the url of a failed http request
-
-In all signatures, you can optionally pass in an Error as the first argument,
-which will cause WError to use it as a prior cause:
-
-* `priorErr` {Error} - an Error object
-
-**Returns:** {Error} an Error object
-
-**IMPORTANT:** If a printf style signature is used, the Error message will
-prefer that over `options.message`.
+* `options.statusCode` {Number} - an http status code
+* `options.toJSON` {Function} - override the default `toJSON()` method
+* `options.toString` {Function} - override the default `toString()` method
 
 ### makeConstructor(name [, defaults])
 
@@ -433,10 +443,10 @@ Creates a custom Error constructor, adds it to the existing exports object.
 
 * `name` {String} - the name of your Error
 * `defaults` {Object} - an object of default values that will added to the
-prototype. It is possible to override the default `toString()` and `toJSON()`
-methods.
+prototype. It is possible to override the default values for `restCode`,
+`statusCode`, `toString()` and `toJSON()`.
 
-**Returns:** {void}
+**Returns:** {Constructor}
 
 ### makeErrFromCode(statusCode [, args...])
 
@@ -475,7 +485,6 @@ make codestyle-fix
 
 ## License
 
-Copyright (c) 2015 Alex Liu
+Copyright (c) 2018 Alex Liu
 
 Licensed under the MIT license.
-

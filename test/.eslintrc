@@ -4,6 +4,6 @@
     },
     "rules": {
         "no-unused-expressions": [ 0 ],
-        "no-undefined": [ 0 ]
+        "require-jsdoc": [ 0 ]
     }
 }

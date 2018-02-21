@@ -1,45 +1,54 @@
 #
 # Directories
 #
-ROOT           := $(shell pwd)
-NODE_MODULES   := $(ROOT)/node_modules
-NODE_BIN       := $(NODE_MODULES)/.bin
-TOOLS          := $(ROOT)/tools
+ROOT_SLASH	:= $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
+ROOT		:= $(patsubst %/,%,$(ROOT_SLASH))
+TEST		:= $(ROOT)/test
+TOOLS		:= $(ROOT)/tools
+GITHOOKS_SRC	:= $(TOOLS)/githooks
+GITHOOKS_DEST	:= $(ROOT)/.git/hooks
+
+
+#
+# Generated Directories
+#
+NODE_MODULES	:= $(ROOT)/node_modules
+NODE_BIN	:= $(NODE_MODULES)/.bin
+COVERAGE	:= $(ROOT)/coverage
 
 
 #
 # Tools and binaries
 #
+NPM		:= npm
+COVERALLS	:= $(NODE_BIN)/coveralls
 ESLINT		:= $(NODE_BIN)/eslint
-JSCS		:= $(NODE_BIN)/jscs
-MOCHA       := $(NODE_BIN)/mocha
-_MOCHA      := $(NODE_BIN)/_mocha
-ISTANBUL    := $(NODE_BIN)/istanbul
-COVERALLS   := $(NODE_BIN)/coveralls
-NSP         := $(NODE_BIN)/nsp
-NPM		    := npm
-NSP_BADGE   := $(TOOLS)/nspBadge.js
+ISTANBUL	:= $(NODE_BIN)/istanbul
+MOCHA		:= $(NODE_BIN)/mocha
+_MOCHA		:= $(NODE_BIN)/_mocha
+NSP		:= $(NODE_BIN)/nsp
+UNLEASH		:= $(NODE_BIN)/unleash
 
 
 #
 # Files
 #
-GIT_HOOK_SRC   = '../../tools/githooks/pre-push'
-GIT_HOOK_DEST  = '.git/hooks/pre-push'
-LIB_FILES  	   := $(ROOT)/lib
-TEST_FILES     := $(ROOT)/test
-COVERAGE_FILES := $(ROOT)/coverage
-LCOV           := $(ROOT)/coverage/lcov.info
-SHRINKWRAP     := $(ROOT)/npm-shrinkwrap.json
-SRCS           := $(shell find $(LIB_FILES) $(TEST_FILES) -name '*.js' -type f \
-					-not \( -path './node_modules/*' -prune \))
+LCOV		:= $(ROOT)/coverage/lcov.info
+PACKAGE_JSON	:= $(ROOT)/package.json
+SHRINKWRAP	:= $(ROOT)/npm-shrinkwrap.json
+GITHOOKS	:= $(wildcard $(GITHOOKS_SRC)/*)
+ALL_FILES	:= $(shell find $(ROOT) \
+			-not \( -path $(NODE_MODULES) -prune \) \
+			-not \( -path $(COVERAGE) -prune \) \
+			-name '*.js' -type f)
+
 
 #
 # Targets
 #
 
 .PHONY: all
-all: node_modules lint codestyle test clean-coverage
+all: node_modules lint test clean-coverage
 
 
 node_modules: package.json
@@ -53,30 +62,20 @@ githooks:
 
 
 .PHONY: lint
-lint: node_modules $(ESLINT) $(SRCS)
-	@$(ESLINT) $(SRCS)
+lint: node_modules $(ESLINT) $(ALL_FILES)
+	@$(ESLINT) $(ALL_FILES)
 
 
 # make nsp always pass - run this as separate travis task for "reporting"
 .PHONY: nsp
 nsp: node_modules $(NSP)
 	@$(NPM) shrinkwrap --dev
-	@($(NSP) check) | $(NSP_BADGE)
+	@($(NSP) check)
 	@rm $(SHRINKWRAP)
 
 
-.PHONY: codestyle
-codestyle: node_modules $(JSCS) $(SRCS)
-	@$(JSCS) $(SRCS)
-
-
-.PHONY: codestyle-fix
-codestyle-fix: node_modules $(JSCS) $(SRCS)
-	@$(JSCS) $(SRCS) --fix
-
-
 .PHONY: prepush
-prepush: node_modules lint codestyle test nsp
+prepush: node_modules lint test nsp
 
 
 .PHONY: test
@@ -96,7 +95,7 @@ report-coverage: coverage
 
 .PHONY: clean-coverage
 clean-coverage:
-	@rm -rf $(COVERAGE_FILES)
+	@rm -rf $(COVERAGE)
 
 
 .PHONY: clean
