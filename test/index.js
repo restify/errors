@@ -756,6 +756,11 @@ describe('restify-errors node module.', function() {
             server.listen(3000, done);
         });
 
+        after(function(done) {
+            client.close();
+            server.close(done);
+        });
+
         it('should send HttpErrors with status codes', function(done) {
             server.get('/1', function(req, res, next) {
                 res.send(new restifyErrors.NotFoundError('gone girl'));
