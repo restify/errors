@@ -43,6 +43,7 @@
     "mkdirp": "^0.5.1",
     "mocha": "^5.0.1",
     "nsp": "^3.2.1",
+    "nsp-preprocessor-yarn": "^1.0.1",
     "restify": "^6.3.4",
     "restify-clients": "^1.5.0"
   },

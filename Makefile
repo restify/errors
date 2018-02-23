@@ -20,7 +20,7 @@ COVERAGE	:= $(ROOT)/coverage
 #
 # Tools and binaries
 #
-NPM		:= npm
+YARN		:= yarn
 COVERALLS	:= $(NODE_BIN)/coveralls
 ESLINT		:= $(NODE_BIN)/eslint
 ISTANBUL	:= $(NODE_BIN)/istanbul
@@ -35,7 +35,7 @@ UNLEASH		:= $(NODE_BIN)/unleash
 #
 LCOV		:= $(ROOT)/coverage/lcov.info
 PACKAGE_JSON	:= $(ROOT)/package.json
-SHRINKWRAP	:= $(ROOT)/npm-shrinkwrap.json
+YARN_LOCK       := $(ROOT)/yarn.lock
 GITHOOKS	:= $(wildcard $(GITHOOKS_SRC)/*)
 ALL_FILES	:= $(shell find $(ROOT) \
 			-not \( -path $(NODE_MODULES) -prune \) \
@@ -47,49 +47,57 @@ ALL_FILES	:= $(shell find $(ROOT) \
 # Targets
 #
 
+.PHONY: help
+help:
+	@perl -nle'print $& if m{^[a-zA-Z_-]+:.*?## .*$$}' $(MAKEFILE_LIST) \
+		| sort | awk 'BEGIN {FS = ":.*?## "}; \
+		{printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+
 .PHONY: all
 all: node_modules lint test clean-coverage
 
 
-node_modules: package.json
-	$(NPM) install
+$(YARN_LOCK): $(PACKAGE_JSON)
+	@$(YARN)
+
+
+$(NODE_MODULES): $(PACKAGE_JSON)
+	@$(YARN)
 	@touch $(NODE_MODULES)
 
 
 .PHONY: githooks
-githooks:
+githooks: ## Install githooks
 	@ln -s $(GIT_HOOK_SRC) $(GIT_HOOK_DEST)
 
 
 .PHONY: lint
-lint: node_modules $(ESLINT) $(ALL_FILES)
+lint: $(NODE_MODULES) ## Run lint and style checks
 	@$(ESLINT) $(ALL_FILES)
 
 
-# make nsp always pass - run this as separate travis task for "reporting"
 .PHONY: nsp
-nsp: node_modules $(NSP)
-	@$(NPM) shrinkwrap --dev
-	@($(NSP) check)
-	@rm $(SHRINKWRAP)
+nsp: $(NODE_MODULES) $(YARN_LOCK) ## Check for dependency vulnerabilities
+	@$(NSP) check --preprocessor yarn
 
 
 .PHONY: prepush
-prepush: node_modules lint test nsp
+prepush: $(NODE_MODULES) lint test nsp ## Run all required tasks for a git push
 
 
 .PHONY: test
-test: node_modules
+test: $(NODE_MODULES) ## Run unit tests
 	@$(MOCHA) -R spec --full-trace
 
 
 .PHONY: coverage
-coverage: node_modules clean-coverage
+coverage: $(NODE_MODULES) clean-coverage ## Generate test coverage
 	@$(ISTANBUL) cover $(_MOCHA) --report lcovonly -- -R spec
 
 
 .PHONY: report-coverage
-report-coverage: coverage
+report-coverage: $(NODE_MODULES) coverage ## Report test coverage to Coveralls
 	@cat $(LCOV) | $(COVERALLS)
 
 
@@ -99,7 +107,7 @@ clean-coverage:
 
 
 .PHONY: clean
-clean: clean-coverage
+clean: clean-coverage ## Clean all generated directories
 	@rm -rf $(NODE_MODULES)
 
 
