@@ -87,7 +87,7 @@ For TypeScript type definitions: `npm install @types/restify-errors`
 
 ### Migration from 5.x to 6.x
 
-This module is now a thin wrapper over the
+As of 6.x this module is now a thin wrapper over the
 [VError](https://github.com/davepacheco/node-verror) module. Every Error
 constructor exposed by this module inherits from VError, which means the
 constructor signatures are now also identical to VError.
@@ -95,6 +95,25 @@ constructor signatures are now also identical to VError.
 All VError static methods are also re-exported on the restify-errors export
 object. For all intents and purposes, you should treat this library as an
 extension of VError, with a list of built in constructors and sugar functions.
+
+The primary difference between the old 5.x and 6.x API is a reshuffling of the
+option names and where they are provided. In 5.x:
+
+```js
+const err = new errors.InternalServerError(priorErr, {
+    message: 'boom!',
+    context: { foo: 'bar' }
+});
+```
+
+In 6.x:
+
+```js
+const err = new errors.InternalServerError({
+    cause: priorErr,
+    info: { foo: 'bar' }
+}, 'boom!');
+```
 
 ### Context/Info object
 In 5.x, the `.context` property was used to store and capture context about the
