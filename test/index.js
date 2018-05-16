@@ -828,24 +828,6 @@ describe('restify-errors node module.', function() {
             done();
         });
 
-        it('should serialize a restify-error Error', function(done) {
-
-            var err = new Error('boom');
-            var myErr = new restifyErrors.InternalServerError({
-                cause: err,
-                context: {
-                    foo: 'bar',
-                    baz: 1
-                }
-            }, 'ISE');
-
-            assert.doesNotThrow(function() {
-                logger.error(myErr, 'wrapped error');
-            });
-
-            done();
-        });
-
         it('should ignore serializer', function(done) {
 
             // pass an error object without stack
@@ -921,6 +903,30 @@ describe('restify-errors node module.', function() {
 
             assert.doesNotThrow(function() {
                 logger.error(multiError, 'MultiError');
+            });
+        });
+
+        it('should serialize arbitrary fields on Error', function() {
+
+            var err1 = new Error('pull!');
+            err1.espresso = 'normale';
+
+            assert.doesNotThrow(function() {
+                logger.error(err1, 'normal error with fields');
+            });
+        });
+
+        it('should not serialize arbitrary fields on VError', function() {
+            var err1 = new verror.VError({
+                name: 'VErrorInfo',
+                info: {
+                    espresso: 'ristretto'
+                }
+            }, 'pull!');
+            err1.espresso = 'lungo';
+
+            assert.doesNotThrow(function() {
+                logger.error(err1, 'verror with fields');
             });
         });
     });
