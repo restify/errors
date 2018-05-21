@@ -808,7 +808,19 @@ describe('restify-errors node module.', function() {
 
         var logger;
 
-        before(function() {
+        it('should expose default serializer', function() {
+            var serializer = restifyErrors.bunyanSerializer;
+            assert.isFunction(serializer);
+        });
+
+        it('should expose factory for serializer creation', function() {
+            var create = restifyErrors.bunyanSerializer.create;
+            assert.isFunction(create);
+            var serializer = create({});
+            assert.isFunction(serializer);
+        });
+
+        it('should create bunyan logger with serializer', function() {
             logger = bunyan.createLogger({
                 name: 'unit-test',
                 serializers: {
@@ -906,16 +918,6 @@ describe('restify-errors node module.', function() {
             });
         });
 
-        it('should serialize arbitrary fields on Error', function() {
-
-            var err1 = new Error('pull!');
-            err1.espresso = 'normale';
-
-            assert.doesNotThrow(function() {
-                logger.error(err1, 'normal error with fields');
-            });
-        });
-
         it('should not serialize arbitrary fields on VError', function() {
             var err1 = new verror.VError({
                 name: 'VErrorInfo',
@@ -928,6 +930,26 @@ describe('restify-errors node module.', function() {
             assert.doesNotThrow(function() {
                 logger.error(err1, 'verror with fields');
             });
+        });
+
+        it('should not serialize arbitrary fields on Error', function() {
+            var serializer = restifyErrors.bunyanSerializer;
+            var err1 = new Error('pull!');
+            err1.espresso = 'normale';
+
+            var serializedErr = serializer(err1);
+            assert.notInclude(serializedErr.stack, 'espresso=normale');
+        });
+
+        it('should serialize arbitrary fields on Error', function() {
+            var serializer = restifyErrors.bunyanSerializer.create({
+                topLevelFields: true
+            });
+            var err1 = new Error('pull!');
+            err1.espresso = 'normale';
+
+            var serializedErr = serializer(err1);
+            assert.notInclude(serializedErr.stack, 'espresso=normale');
         });
     });
 });
