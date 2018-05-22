@@ -808,7 +808,7 @@ describe('restify-errors node module.', function() {
 
         var logger;
 
-        it('should expose default serializer', function() {
+        it('should expose default serializer function', function() {
             var serializer = restifyErrors.bunyanSerializer;
             assert.isFunction(serializer);
         });
@@ -816,8 +816,20 @@ describe('restify-errors node module.', function() {
         it('should expose factory for serializer creation', function() {
             var create = restifyErrors.bunyanSerializer.create;
             assert.isFunction(create);
-            var serializer = create({});
-            assert.isFunction(serializer);
+        });
+
+        it('should create a custom bucket of err serializer', function() {
+            // the factory returns a POJO of serializer keys to serializer
+            // functions.
+            var serializer = restifyErrors.bunyanSerializer.create();
+            // returned serializer object is of form:
+            // {
+            //      err: <function>
+            // }
+            // which matches bunyan and pino
+            assert.isObject(serializer);
+            assert.deepEqual(_.keys(serializer), [ 'err' ]);
+            assert.isFunction(serializer.err);
         });
 
         it('should create bunyan logger with serializer', function() {
@@ -948,7 +960,9 @@ describe('restify-errors node module.', function() {
             var err1 = new Error('pull!');
             err1.espresso = 'normale';
 
-            var serializedErr = serializer(err1);
+            logger.child({ serializers: serializer }).error(err1);
+
+            var serializedErr = serializer.err(err1, 'oh noes!');
             assert.notInclude(serializedErr.stack, 'espresso=normale');
         });
     });
