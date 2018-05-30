@@ -808,7 +808,31 @@ describe('restify-errors node module.', function() {
 
         var logger;
 
-        before(function() {
+        it('should expose default serializer function', function() {
+            var serializer = restifyErrors.bunyanSerializer;
+            assert.isFunction(serializer);
+        });
+
+        it('should expose factory for serializer creation', function() {
+            var create = restifyErrors.bunyanSerializer.create;
+            assert.isFunction(create);
+        });
+
+        it('should create a custom bucket of err serializer', function() {
+            // the factory returns a POJO of serializer keys to serializer
+            // functions.
+            var serializer = restifyErrors.bunyanSerializer.create();
+            // returned serializer object is of form:
+            // {
+            //      err: <function>
+            // }
+            // which matches bunyan and pino
+            assert.isObject(serializer);
+            assert.deepEqual(_.keys(serializer), [ 'err' ]);
+            assert.isFunction(serializer.err);
+        });
+
+        it('should create bunyan logger with serializer', function() {
             logger = bunyan.createLogger({
                 name: 'unit-test',
                 serializers: {
@@ -823,24 +847,6 @@ describe('restify-errors node module.', function() {
 
             assert.doesNotThrow(function() {
                 logger.error(err, 'standard error');
-            });
-
-            done();
-        });
-
-        it('should serialize a restify-error Error', function(done) {
-
-            var err = new Error('boom');
-            var myErr = new restifyErrors.InternalServerError({
-                cause: err,
-                context: {
-                    foo: 'bar',
-                    baz: 1
-                }
-            }, 'ISE');
-
-            assert.doesNotThrow(function() {
-                logger.error(myErr, 'wrapped error');
             });
 
             done();
@@ -922,6 +928,42 @@ describe('restify-errors node module.', function() {
             assert.doesNotThrow(function() {
                 logger.error(multiError, 'MultiError');
             });
+        });
+
+        it('should not serialize arbitrary fields on VError', function() {
+            var err1 = new verror.VError({
+                name: 'VErrorInfo',
+                info: {
+                    espresso: 'ristretto'
+                }
+            }, 'pull!');
+            err1.espresso = 'lungo';
+
+            assert.doesNotThrow(function() {
+                logger.error(err1, 'verror with fields');
+            });
+        });
+
+        it('should not serialize arbitrary fields on Error', function() {
+            var serializer = restifyErrors.bunyanSerializer;
+            var err1 = new Error('pull!');
+            err1.espresso = 'normale';
+
+            var serializedErr = serializer(err1);
+            assert.notInclude(serializedErr.stack, 'espresso=normale');
+        });
+
+        it('should serialize arbitrary fields on Error', function() {
+            var serializer = restifyErrors.bunyanSerializer.create({
+                topLevelFields: true
+            });
+            var err1 = new Error('pull!');
+            err1.espresso = 'normale';
+
+            logger.child({ serializers: serializer }).error(err1);
+
+            var serializedErr = serializer.err(err1, 'oh noes!');
+            assert.notInclude(serializedErr.stack, 'espresso=normale');
         });
     });
 });

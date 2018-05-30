@@ -303,7 +303,7 @@ Caused by: Error: file lookup failed!
     at node.js:814:3
 ```
 
-### Bunyan support
+### Bunyan/Pino support
 
 Since errors created via restify-errors inherit from VError, you'll get out of
 the box support via bunyan's standard serializers. If you are using the
@@ -395,6 +395,52 @@ log.error(multiErr, 'oh noes');
 
 For more information about building rich errors, check out
 [VError](https://github.com/davepacheco/node-verror).
+
+
+#### Customizing the serializer
+
+The serializer can also be customized. The serializer currently supports
+the following options:
+
+* `options.topLevelFields` {Boolean} - if true, serializes all top level fields
+ found on the error object, minus "known" Error/VError fields. This can be
+ useful if errors are created in dependencies that don't use VError or
+ restify-errors to maintain context in an independent object.
+
+For example:
+
+```js
+var bunyan = require('bunyan');
+var restifyErrors = require('restify-errors');
+
+var log = bunyan.createLogger({
+    name: 'myLogger',
+    serializers: restifyErrors.bunyanSerializer.create({
+        topLevelFields: true
+    })
+});
+
+var err = new Error('pull!');
+err.espresso = 'normale';
+
+log.error(err, 'oh noes!');
+```
+
+```sh
+[2018-05-22T01:32:25.164Z] ERROR: myLogger/61085 on laptop: oh noes!
+    Error: pull! (espresso="normale")
+        at Object.<anonymous> (/restify/serializer.js:11:11)
+        at Module._compile (module.js:577:32)
+        at Object.Module._extensions..js (module.js:586:10)
+        at Module.load (module.js:494:32)
+        at tryModuleLoad (module.js:453:12)
+        at Function.Module._load (module.js:445:3)
+        at Module.runMain (module.js:611:10)
+        at run (bootstrap_node.js:387:7)
+        at startup (bootstrap_node.js:153:9)
+```
+
+
 
 
 ### Subclassing Errors
