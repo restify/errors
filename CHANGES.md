@@ -1,5 +1,11 @@
 # Change log
 
+## 6.1.0
+
+- NEW: support serialization of arbitrary top level fields in log serializer.
+  this is opt in via the new serializer factory.
+- FIX: remove duplication of Error properties for VError objects
+
 ## 6.0.0
 
 - BREAKING: All Error constructors now mirror VError constructor APIs. Re-export
