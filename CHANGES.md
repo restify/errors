@@ -1,5 +1,10 @@
 # Change log
 
+## 6.1.1
+
+- FIX: don't serialize arbitrary top level fields that are fields known to
+  VError classes.
+
 ## 6.1.0
 
 - NEW: support serialization of arbitrary top level fields in log serializer.
