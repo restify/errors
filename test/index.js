@@ -965,5 +965,23 @@ describe('restify-errors node module.', function() {
             var serializedErr = serializer.err(err1, 'oh noes!');
             assert.notInclude(serializedErr.stack, 'espresso=normale');
         });
+
+        it('should not serialize known fields on VError', function() {
+            var serializer = restifyErrors.bunyanSerializer.create({
+                topLevelFields: true
+            });
+            var err1 = new verror.VError({
+                name: 'VErrorInfo',
+                info: {
+                    espresso: 'ristretto'
+                }
+            }, 'pull!');
+            err1.espresso = 'lungo';
+
+            logger.child({ serializers: serializer }).error(err1);
+
+            var serializedErr = serializer.err(err1, 'oh noes!');
+            assert.notInclude(serializedErr.stack, 'cause=undefined');
+        });
     });
 });
