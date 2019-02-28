@@ -983,5 +983,19 @@ describe('restify-errors node module.', function() {
             var serializedErr = serializer.err(err1, 'oh noes!');
             assert.notInclude(serializedErr.stack, 'cause=undefined');
         });
+
+        it('should not serialize omitted fields', function() {
+            var serializer = restifyErrors.bunyanSerializer.create({
+                topLevelFields: true,
+                omitFields: [ 'foo' ]
+            });
+            var err1 = new Error('bar');
+            err1.foo = 'baz';
+
+            logger.child({ serializers: serializer }).error(err1);
+
+            var serializedErr = serializer.err(err1, 'oh noes!');
+            assert.notInclude(serializedErr.stack, 'foo="baz"');
+        });
     });
 });
