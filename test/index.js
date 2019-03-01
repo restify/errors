@@ -5,6 +5,7 @@
 
 // core modules
 var http = require('http');
+var domain = require('domain');
 
 // userland
 var assert = require('chai').assert;
@@ -982,6 +983,46 @@ describe('restify-errors node module.', function() {
 
             var serializedErr = serializer.err(err1, 'oh noes!');
             assert.notInclude(serializedErr.stack, 'cause=undefined');
+        });
+
+        it('should serialize domain when not using node domains', function() {
+            var serializer = restifyErrors.bunyanSerializer.create({
+                topLevelFields: true
+            });
+            var err1 = new Error('foo');
+            err1.domain = 'bar';
+
+            logger.child({ serializers: serializer }).error(err1);
+
+            var serializedErr = serializer.err(err1, 'oh noes!');
+            assert.include(serializedErr.stack, 'domain="bar"');
+        });
+
+        // eslint-disable-next-line max-len
+        it('should not serialize domain when using node domains', function(done) {
+            var dom = domain.create();
+            dom.on('error', function(err1) {
+                var serializer = restifyErrors.bunyanSerializer.create({
+                    topLevelFields: true
+                });
+
+                logger.child({ serializers: serializer }).error(err1);
+
+                var serializedErr = serializer.err(err1, 'oh noes!');
+                // This weird pattern is necessary to make mocha report failures
+                // correctly inside a domain context
+                try {
+                    assert.notInclude(serializedErr.stack, 'domain=');
+                    return done();
+                } catch (e) {
+                    return done(e);
+                }
+            });
+            dom.run(function() {
+                process.nextTick(function() {
+                    throw new Error('foo');
+                });
+            });
         });
     });
 });
