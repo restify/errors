@@ -1,5 +1,9 @@
 # Change log
 
+## 7.0.0
+
+- BREAKING: omit node domains from serializer
+
 ## 6.1.1
 
 - FIX: don't serialize arbitrary top level fields that are fields known to
