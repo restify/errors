@@ -129,7 +129,7 @@ restify-errors exports:
 
 ```js
 var errors = require('restify-errors');
-var verror = require('verror');
+var nerror = require('@netflix/nerror');
 
 var err = new errors.InternalServerError({
     info: {

@@ -13,8 +13,10 @@ var bunyan = require('bunyan');
 var _ = require('lodash');
 var restify = require('restify');
 var restifyClients = require('restify-clients');
-var verror = require('verror');
-var WError = verror.WError;
+var nerror = require('@netflix/nerror');
+var WError = nerror.WError;
+var VError = nerror.VError;
+var MultiError = nerror.MultiError;
 
 // internal
 var helpers = require('../lib/helpers');
@@ -113,7 +115,7 @@ describe('restify-errors node module.', function() {
                 info: info
             }, 'boom');
 
-            assert.deepEqual(verror.info(myErr), info);
+            assert.deepEqual(nerror.info(myErr), info);
             assert.deepEqual(restifyErrors.info(myErr), info);
             assert.deepEqual(myErr.context, info);
         });
@@ -893,7 +895,7 @@ describe('restify-errors node module.', function() {
 
         it('should serialize a VError with info', function() {
 
-            var err = new verror.VError({
+            var err = new VError({
                 name: 'VErrorInfo',
                 info: {
                     foo: 'qux',
@@ -916,7 +918,7 @@ describe('restify-errors node module.', function() {
                     baz: 1
                 }
             }, 'ISE');
-            var err3 = new verror.VError({
+            var err3 = new VError({
                 name: 'VErrorInfo',
                 cause: err1,
                 info: {
@@ -924,7 +926,7 @@ describe('restify-errors node module.', function() {
                     baz: 2
                 }
             }, 'this is a verror with info');
-            var multiError = new verror.MultiError([ err1, err2, err3 ]);
+            var multiError = new MultiError([ err1, err2, err3 ]);
 
             assert.doesNotThrow(function() {
                 logger.error(multiError, 'MultiError');
@@ -932,7 +934,7 @@ describe('restify-errors node module.', function() {
         });
 
         it('should not serialize arbitrary fields on VError', function() {
-            var err1 = new verror.VError({
+            var err1 = new VError({
                 name: 'VErrorInfo',
                 info: {
                     espresso: 'ristretto'
@@ -971,7 +973,7 @@ describe('restify-errors node module.', function() {
             var serializer = restifyErrors.bunyanSerializer.create({
                 topLevelFields: true
             });
-            var err1 = new verror.VError({
+            var err1 = new VError({
                 name: 'VErrorInfo',
                 info: {
                     espresso: 'ristretto'
