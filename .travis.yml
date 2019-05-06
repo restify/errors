@@ -1,10 +1,9 @@
 language: node_js
 node_js:
-    - "4"
-    - "6"
-    - "8"
-    - "stable"
+   - '8'
+   - '10'
+   - "lts/*"                # Active LTS release
+   - "node"                 # Latest stable release
 after_success:
     - make report-coverage
-    - make nsp
 

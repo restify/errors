@@ -26,7 +26,6 @@ ESLINT		:= $(NODE_BIN)/eslint
 ISTANBUL	:= $(NODE_BIN)/istanbul
 MOCHA		:= $(NODE_BIN)/mocha
 _MOCHA		:= $(NODE_BIN)/_mocha
-NSP		:= $(NODE_BIN)/nsp
 UNLEASH		:= $(NODE_BIN)/unleash
 
 
@@ -77,13 +76,8 @@ lint: $(NODE_MODULES) ## Run lint and style checks
 	@$(ESLINT) $(ALL_FILES)
 
 
-.PHONY: nsp
-nsp: $(NODE_MODULES) $(YARN_LOCK) ## Check for dependency vulnerabilities
-	@$(NSP) check --preprocessor yarn
-
-
 .PHONY: prepush
-prepush: $(NODE_MODULES) lint test nsp ## Run all required tasks for a git push
+prepush: $(NODE_MODULES) lint test ## Run all required tasks for a git push
 
 
 .PHONY: test
