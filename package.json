@@ -42,8 +42,6 @@
     "istanbul": "^0.4.5",
     "mkdirp": "^0.5.1",
     "mocha": "^6.1.4",
-    "nsp": "^3.2.1",
-    "nsp-preprocessor-yarn": "^1.0.1",
     "restify": "^8.3.1",
     "restify-clients": "^2.6.4"
   },
