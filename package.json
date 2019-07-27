@@ -37,13 +37,16 @@
   "devDependencies": {
     "bunyan": "^1.8.10",
     "chai": "^4.2.0",
+    "conventional-changelog-angular": "^5.0.0",
+    "conventional-recommended-bump": "^4.0.0",
     "coveralls": "^3.0.3",
     "eslint": "^5.16.0",
     "istanbul": "^0.4.5",
     "mkdirp": "^0.5.1",
     "mocha": "^6.1.4",
     "restify": "^8.3.1",
-    "restify-clients": "^2.6.4"
+    "restify-clients": "^2.6.4",
+    "unleash": "^2.0.1"
   },
   "optionalDependencies": {
     "safe-json-stringify": "^1.0.4"

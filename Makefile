@@ -27,6 +27,7 @@ ISTANBUL	:= $(NODE_BIN)/istanbul
 MOCHA		:= $(NODE_BIN)/mocha
 _MOCHA		:= $(NODE_BIN)/_mocha
 UNLEASH		:= $(NODE_BIN)/unleash
+CONVENTIONAL_RECOMMENDED_BUMP := $(NODE_BIN)/conventional-recommended-bump
 
 
 #
@@ -69,6 +70,17 @@ $(NODE_MODULES): $(PACKAGE_JSON)
 .PHONY: githooks
 githooks: ## Install githooks
 	@ln -s $(GIT_HOOK_SRC) $(GIT_HOOK_DEST)
+
+
+.PHONY: release-dry
+release-dry: $(NODE_MODULES) ## Dry run of `release` target
+	$(UNLEASH) -d --type=$(shell $(CONVENTIONAL_RECOMMENDED_BUMP) -p angular)
+
+
+.PHONY: release
+release: $(NODE_MODULES) ## Versions, tags, and updates changelog based on commit messages
+	$(UNLEASH) --type=$(shell $(CONVENTIONAL_RECOMMENDED_BUMP) -p angular) --no-publish
+	$(NPM) publish
 
 
 .PHONY: lint
