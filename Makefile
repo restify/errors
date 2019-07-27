@@ -21,6 +21,7 @@ COVERAGE	:= $(ROOT)/coverage
 # Tools and binaries
 #
 YARN		:= yarn
+NPM		:= npm
 COVERALLS	:= $(NODE_BIN)/coveralls
 ESLINT		:= $(NODE_BIN)/eslint
 ISTANBUL	:= $(NODE_BIN)/istanbul
