@@ -5,7 +5,6 @@
 [![Coverage Status](https://coveralls.io/repos/restify/errors/badge.svg?branch=master)](https://coveralls.io/r/restify/errors?branch=master)
 [![Dependency Status](https://david-dm.org/restify/errors.svg)](https://david-dm.org/restify/errors)
 [![devDependency Status](https://david-dm.org/restify/errors/dev-status.svg)](https://david-dm.org/restify/errors#info=devDependencies)
-[![bitHound Score](https://www.bithound.io/github/restify/errors/badges/score.svg)](https://www.bithound.io/github/restify/errors/master)
 
 > A collection of HTTP and REST Error constructors.
 
