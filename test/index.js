@@ -5,7 +5,6 @@
 
 // core modules
 var http = require('http');
-var domain = require('domain');
 
 // userland
 var assert = require('chai').assert;
@@ -1002,6 +1001,8 @@ describe('restify-errors node module.', function() {
 
         // eslint-disable-next-line max-len
         it('should not serialize domain when using node domains', function(done) {
+            // eslint-disable-next-line global-require
+            var domain = require('domain');
             var dom = domain.create();
             dom.on('error', function(err1) {
                 var serializer = restifyErrors.bunyanSerializer.create({
