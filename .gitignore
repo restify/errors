@@ -17,3 +17,4 @@ yarn.lock
 
 # build task results for ci
 coverage/
+.nyc_output/

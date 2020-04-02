@@ -24,7 +24,7 @@ YARN		:= yarn
 NPM		:= npm
 COVERALLS	:= $(NODE_BIN)/coveralls
 ESLINT		:= $(NODE_BIN)/eslint
-ISTANBUL	:= $(NODE_BIN)/istanbul
+ISTANBUL	:= $(NODE_BIN)/nyc
 MOCHA		:= $(NODE_BIN)/mocha
 _MOCHA		:= $(NODE_BIN)/_mocha
 UNLEASH		:= $(NODE_BIN)/unleash
@@ -100,12 +100,12 @@ test: $(NODE_MODULES) ## Run unit tests
 
 .PHONY: coverage
 coverage: $(NODE_MODULES) clean-coverage ## Generate test coverage
-	@$(ISTANBUL) cover $(_MOCHA) --report lcovonly -- -R spec
+	@$(ISTANBUL) --report lcovonly $(_MOCHA) -R spec
 
 
 .PHONY: report-coverage
 report-coverage: $(NODE_MODULES) coverage ## Report test coverage to Coveralls
-	@cat $(LCOV) | $(COVERALLS)
+	$(ISTANBUL) report --reporter=text-lcov | $(COVERALLS)
 
 
 .PHONY: clean-coverage
