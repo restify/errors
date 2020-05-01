@@ -32,7 +32,9 @@
     "rest errors"
   ],
   "scripts": {
-    "test": "make test"
+    "test": "make test",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "devDependencies": {
     "bunyan": "^1.8.12",
@@ -54,6 +56,8 @@
   "dependencies": {
     "@netflix/nerror": "^1.1.3",
     "assert-plus": "^1.0.0",
-    "lodash": "^4.17.15"
-  }
+    "lodash": "^4.17.15",
+    "snyk": "^1.316.1"
+  },
+  "snyk": true
 }
