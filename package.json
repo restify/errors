@@ -44,8 +44,8 @@
     "mkdirp": "^0.5.1",
     "mocha": "^6.2.2",
     "nyc": "^14.1.1",
-    "restify": "^8.5.0",
-    "restify-clients": "^2.6.7",
+    "restify": "^11.1.0",
+    "restify-clients": "^4.2.0",
     "unleash": "^2.0.1"
   },
   "optionalDependencies": {
