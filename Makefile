@@ -20,7 +20,6 @@ COVERAGE	:= $(ROOT)/coverage
 #
 # Tools and binaries
 #
-YARN		:= yarn
 NPM		:= npm
 COVERALLS	:= $(NODE_BIN)/coveralls
 ESLINT		:= $(NODE_BIN)/eslint
@@ -36,7 +35,7 @@ CONVENTIONAL_RECOMMENDED_BUMP := $(NODE_BIN)/conventional-recommended-bump
 #
 LCOV		:= $(ROOT)/coverage/lcov.info
 PACKAGE_JSON	:= $(ROOT)/package.json
-YARN_LOCK       := $(ROOT)/yarn.lock
+PKG_LOCK       := $(ROOT)/package-lock.json
 GITHOOKS	:= $(wildcard $(GITHOOKS_SRC)/*)
 ALL_FILES	:= $(shell find $(ROOT) \
 			-not \( -path $(NODE_MODULES) -prune \) \
@@ -59,12 +58,12 @@ help:
 all: node_modules lint test clean-coverage
 
 
-$(YARN_LOCK): $(PACKAGE_JSON)
-	@$(YARN)
+$(PKG_LOCK): $(PACKAGE_JSON)
+	@$(NPM) install
 
 
 $(NODE_MODULES): $(PACKAGE_JSON)
-	@$(YARN)
+	@$(NPM) install
 	@touch $(NODE_MODULES)
 
 
