@@ -1,10 +1,6 @@
 # restify-errors
 
-[![NPM Version](https://img.shields.io/npm/v/restify-errors.svg)](https://npmjs.org/package/restify-errors)
-[![Build Status](https://travis-ci.org/restify/errors.svg?branch=master)](https://travis-ci.org/restify/errors)
-[![Coverage Status](https://coveralls.io/repos/restify/errors/badge.svg?branch=master)](https://coveralls.io/r/restify/errors?branch=master)
-[![Dependency Status](https://david-dm.org/restify/errors.svg)](https://david-dm.org/restify/errors)
-[![devDependency Status](https://david-dm.org/restify/errors/dev-status.svg)](https://david-dm.org/restify/errors#info=devDependencies)
+[![Build Status](https://github.com/restify/errors/actions/workflows/test.yml/badge.svg)](https://github.com/restify/errors/actions/workflows/test.yml)
 
 > A collection of HTTP and REST Error constructors.
 
