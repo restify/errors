@@ -489,7 +489,7 @@ are identical to the
 
 restify-errors adds additional options for the final signature:
 
-* `options.restCode` {Number} - a description code for your Error. This is used
+* `options.restCode` {String} - a description code for your Error. This is used
 by restify to render an error when it is directly passed to `res.send()`. By
 default, it is the name of your error constructor (e.g., the restCode for a
 BadDigestError is BadDigest).
