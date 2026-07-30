@@ -1,5 +1,12 @@
 # Change log
 
+## 9.0.0-rc.0
+
+- BREAKING: upgrade to `@netflix/nerror@2.0.0-rc.0`, which drops the legacy
+  `.cause()` function in favor of the spec `Error.prototype.cause` property.
+  `lib/serializer.js` and `lib/baseClasses/HttpError.js` now read `err.cause`
+  as a property instead of invoking it as a function.
+
 ## 7.0.0
 
 - BREAKING: omit node domains from serializer
