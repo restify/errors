@@ -9,6 +9,8 @@ permissions:
   contents: read
 
 concurrency:
+  # tag_name grouping - queues actual releases for the same tag
+  # run_id - fallback value required for group as tag_name might not always be present (manual triggers)
   group: npm-publish-${{ github.event.release.tag_name || github.run_id }}
   cancel-in-progress: false
 
