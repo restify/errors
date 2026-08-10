@@ -15,7 +15,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/restify/errors.git"
+    "url": "git+https://github.com/restify/errors.git"
+  },
+  "bugs": {
+    "url": "https://github.com/restify/errors/issues"
   },
   "license": "MIT",
   "files": [
@@ -37,16 +40,13 @@
   "devDependencies": {
     "bunyan": "^1.8.12",
     "chai": "^4.2.0",
-    "conventional-changelog-angular": "^5.0.6",
-    "conventional-recommended-bump": "^6.0.5",
     "coveralls": "^3.0.9",
     "eslint": "^6.7.2",
     "mkdirp": "^0.5.1",
     "mocha": "^6.2.2",
     "nyc": "^14.1.1",
     "restify": "^11.1.0",
-    "restify-clients": "^4.2.0",
-    "unleash": "^2.0.1"
+    "restify-clients": "^4.2.0"
   },
   "optionalDependencies": {
     "safe-json-stringify": "^1.2.0"
