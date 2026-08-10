@@ -23,7 +23,6 @@ jobs:
         run: make all
   test-optional:
     runs-on: ubuntu-latest
-    continue-on-error: true
     strategy:
       fail-fast: false
       matrix:
@@ -37,5 +36,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install
         run: npm ci
+        continue-on-error: true
       - name: Test / Lint / Codestyle
         run: make all
+        continue-on-error: true
