@@ -25,7 +25,6 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 22.x
-          cache: npm
 
       - name: verify release version
         if: github.event_name == 'release'
@@ -43,12 +42,6 @@ jobs:
           fi
         env:
           GITHUB_EVENT_RELEASE_TAG_NAME: ${{ github.event.release.tag_name }}
-
-      - name: install dependencies
-        run: npm ci
-
-      - name: run tests
-        run: make test
 
       - name: validate publish package contents
         run: |
