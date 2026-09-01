@@ -4,7 +4,7 @@
 
 ### ⚠ BREAKING CHANGES
 
-* Error instances no longer expose .cause() as a callable function. Consumers must access the spec-compliant .cause property instead. Bump @netflix/nerror dependency/override to ^2.0.0-rc.0 and package version to 9.0.0-rc.0 accordingly.
+* Error instances no longer expose .cause() as a callable function. Consumers must access the spec-compliant .cause property instead. Bump @netflix/nerror dependency/override to ^2.0.0 and package version to 9.0.0 accordingly.
 
 ### Bug Fixes
 
