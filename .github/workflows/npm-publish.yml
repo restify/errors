@@ -76,4 +76,11 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: publish to npm
-        run: npm publish --provenance
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          if [[ "$RELEASE_TAG" == *-rc* ]]; then
+            npm publish --provenance --tag rc
+          else
+            npm publish --provenance
+          fi
