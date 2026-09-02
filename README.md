@@ -545,12 +545,13 @@ make codestyle-fix
 
 ### Releasing
 
-Releases are automated with [release-please](https://github.com/googleapis/release-please#readme):
+Releases are automated with [release-please](https://github.com/googleapis/release-please#readme). Versioning comes from conventional commits on `master` (`fix:` patches, `feat:` minor, `!` / `BREAKING CHANGE` major). `chore:` does not bump. There is a **single** shared Release PR; RC and stable take turns on it.
 
-1. Merge conventional-commit-style PRs (`fix:`, `feat:`, etc.) into `master`.
-2. `release-please` opens or updates a Release PR with the version bump and changelog.
-3. Review and merge the Release PR when ready to ship.
-4. `release-please` tags the release and dispatches the `npm-publish` workflow, which validates and publishes the package to npm.
+1. Merge `fix:` / `feat:` PRs into `master`. `release-please` opens or updates that PR as a **release candidate** (`X.Y.Z-rc`, then `X.Y.Z-rc.1`, …). `package.json` on the PR is already the version that will be tagged.
+2. Merge the RC PR when you want to cut an RC. `release-please` tags a GitHub **prerelease** (`vX.Y.Z-rc`) and dispatches `npm-publish`. Approve the **Publish** environment to publish to npm with dist-tag `rc`; withhold approval to skip npm (the git tag still exists).
+3. After the RC merge, the shared PR is rewritten as the matching **stable** Release PR (`X.Y.Z`).
+4. Merge that stable PR to ship `X.Y.Z` (GitHub Release + `npm-publish` without `--tag rc`, npm dist-tag `latest`). Same **Publish** approval gate.
+5. Further `fix:` / `feat:` commits on `master` while the stable PR is still open rewrite it into the **next RC** (`X.Y.Z-rc.1`, …) instead of shipping that stable. Use that when you want another candidate; merge stable with no extra bumping commits when you want to publish `latest`.
 
 ## License
 
