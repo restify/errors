@@ -1,4 +1,12 @@
 <a name="8.0.2"></a>
+## [9.0.1](https://github.com/restify/errors/compare/v9.0.0...v9.0.1) (2026-09-03)
+
+
+### Bug Fixes
+
+* **deps:** bump @netflix/nerror to ^2.0.1 ([#124](https://github.com/restify/errors/issues/124)) ([29b80e8](https://github.com/restify/errors/commit/29b80e8c1953cb8e413685e2d02af9bd7b36bd2d))
+* lower Node engines floor back to &gt;=22.0.0 ([#122](https://github.com/restify/errors/issues/122)) ([7af41ad](https://github.com/restify/errors/commit/7af41ad233d122ed72e7e3dd04e42bcfcf9869db))
+
 ## [9.0.0](https://github.com/restify/errors/compare/v8.0.2...v9.0.0) (2026-09-01)
 
 
